@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { TrendingUp, TrendingDown, BarChart3, Signal } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import AdvancedTradingViewWithBackend from '../components/AdvancedTradingViewWithBackend';
+import SignalsInline from '../components/SignalsInline';
 
 const DashboardContainer = styled.div`
   max-width: 1200px;
@@ -15,45 +16,6 @@ const PageTitle = styled.h1`
   font-weight: bold;
   margin-bottom: 30px;
   text-align: center;
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-`;
-
-const StatCard = styled.div`
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-`;
-
-const StatIcon = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-  
-  svg {
-    width: 40px;
-    height: 40px;
-    color: ${props => props.color || '#2563eb'};
-  }
-`;
-
-const StatValue = styled.div`
-  color: #ffffff;
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-const StatLabel = styled.div`
-  color: #666;
-  font-size: 14px;
 `;
 
 const ChartSection = styled.div`
@@ -77,47 +39,10 @@ const SectionTitle = styled.h2`
   }
 `;
 
-
 function DashboardBasic() {
-  const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN'];
-
   return (
     <DashboardContainer>
       <PageTitle>TradingView - Hệ thống Dự đoán Chứng khoán</PageTitle>
-
-      <StatsGrid>
-        <StatCard>
-          <StatIcon color="#2563eb">
-            <BarChart3 />
-          </StatIcon>
-          <StatValue>{symbols.length}</StatValue>
-          <StatLabel>Tổng số mã cổ phiếu</StatLabel>
-        </StatCard>
-
-        <StatCard>
-          <StatIcon color="#10b981">
-            <TrendingUp />
-          </StatIcon>
-          <StatValue>5</StatValue>
-          <StatLabel>Tín hiệu MUA (LONG)</StatLabel>
-        </StatCard>
-
-        <StatCard>
-          <StatIcon color="#ef4444">
-            <TrendingDown />
-          </StatIcon>
-          <StatValue>3</StatValue>
-          <StatLabel>Tín hiệu BÁN (SHORT)</StatLabel>
-        </StatCard>
-
-        <StatCard>
-          <StatIcon color="#f59e0b">
-            <Signal />
-          </StatIcon>
-          <StatValue>8</StatValue>
-          <StatLabel>Tín hiệu hoạt động</StatLabel>
-        </StatCard>
-      </StatsGrid>
 
       <ChartSection>
         <SectionTitle>
@@ -126,6 +51,9 @@ function DashboardBasic() {
         </SectionTitle>
 
         <AdvancedTradingViewWithBackend />
+
+        {/* Tín hiệu ngay bên dưới chart */}
+        <SignalsInline />
       </ChartSection>
     </DashboardContainer>
   );

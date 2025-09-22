@@ -35,19 +35,42 @@ public class PredictionSignalService {
         return predictionSignalRepository.saveAll(signals);
     }
     
-    /**
-     * Convert PredictionSignal to PredictionSignalEntity and save
-     */
-    public PredictionSignalEntity saveFromPredictionSignal(PredictionSignal signal, String symbol) {
-        PredictionSignalEntity entity = new PredictionSignalEntity(
+    private PredictionSignalEntity buildEntity(String symbol, PredictionSignal signal) {
+        // Tạm parse rsi/platform/reversalPoint từ reason nếu tồn tại định dạng "RSI:xx;Platform:...;Reversal:..."
+        Double rsi = null;
+        String platform = null;
+        Double reversal = null;
+        if (signal.getReason() != null) {
+            String[] parts = signal.getReason().split(";");
+            for (String p : parts) {
+                String s = p.trim().toLowerCase();
+                if (s.startsWith("rsi:")) {
+                    try { rsi = Double.parseDouble(s.substring(4)); } catch (Exception ignored) {}
+                } else if (s.startsWith("platform:")) {
+                    platform = p.substring(p.indexOf(':')+1).trim();
+                } else if (s.startsWith("reversal:")) {
+                    try { reversal = Double.parseDouble(s.substring(9)); } catch (Exception ignored) {}
+                }
+            }
+        }
+        return new PredictionSignalEntity(
             symbol,
             signal.getTimestamp(),
             convertSignalType(signal.getSignalType()),
             signal.getConfidence(),
             signal.getReason(),
-            signal.getPrice()
+            signal.getPrice(),
+            rsi,
+            platform,
+            reversal
         );
-        return save(entity);
+    }
+    
+    /**
+     * Convert PredictionSignal to PredictionSignalEntity and save
+     */
+    public PredictionSignalEntity saveFromPredictionSignal(PredictionSignal signal, String symbol) {
+        return save(buildEntity(symbol, signal));
     }
     
     /**
@@ -55,14 +78,7 @@ public class PredictionSignalService {
      */
     public List<PredictionSignalEntity> saveFromPredictionSignalList(List<PredictionSignal> signals, String symbol) {
         List<PredictionSignalEntity> entities = signals.stream()
-            .map(signal -> new PredictionSignalEntity(
-                symbol,
-                signal.getTimestamp(),
-                convertSignalType(signal.getSignalType()),
-                signal.getConfidence(),
-                signal.getReason(),
-                signal.getPrice()
-            ))
+            .map(s -> buildEntity(symbol, s))
             .collect(Collectors.toList());
         return saveAll(entities);
     }

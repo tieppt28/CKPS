@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { TrendingUp, BarChart3, Signal, Globe } from 'lucide-react';
+import { TrendingUp, BarChart3 } from 'lucide-react';
 
 const HeaderContainer = styled.header`
   position: fixed;
@@ -110,15 +110,6 @@ function Header() {
             <BarChart3 size={18} />
             TradingView
           </NavLink>
-          
-          <NavLink 
-            to="/signals" 
-            active={location.pathname === '/signals' ? 1 : 0}
-          >
-            <Signal size={18} />
-            Signals
-          </NavLink>
-          
         </Nav>
         
         <StatusIndicator>

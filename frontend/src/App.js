@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Header from './components/Header';
 import DashboardBasic from './pages/DashboardBasic';
 import StockDetail from './pages/StockDetail';
-import Signals from './pages/Signals';
 import './App.css';
 
 const AppContainer = styled.div`
@@ -26,7 +25,6 @@ function App() {
           <Routes>
             <Route path="/" element={<DashboardBasic />} />
             <Route path="/stock/:symbol" element={<StockDetail />} />
-            <Route path="/signals" element={<Signals />} />
           </Routes>
         </MainContent>
       </Router>

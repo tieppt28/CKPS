@@ -32,6 +32,16 @@ public class PredictionSignalEntity {
     
     @Column(name = "price", nullable = false)
     private Double price;
+
+    // New fields for UI/analytics
+    @Column(name = "rsi")
+    private Double rsi;
+
+    @Column(name = "platform")
+    private String platform; // Nền tảng/cơ sở tín hiệu (ví dụ: "Đảo chiều", "EMA", ...)
+
+    @Column(name = "reversal_point")
+    private Double reversalPoint; // Điểm đảo chiều gợi ý
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -55,6 +65,15 @@ public class PredictionSignalEntity {
         this.reason = reason;
         this.price = price;
     }
+
+    public PredictionSignalEntity(String symbol, LocalDateTime timestamp, SignalType signalType,
+                                  Double confidence, String reason, Double price,
+                                  Double rsi, String platform, Double reversalPoint) {
+        this(symbol, timestamp, signalType, confidence, reason, price);
+        this.rsi = rsi;
+        this.platform = platform;
+        this.reversalPoint = reversalPoint;
+    }
     
     // Getters and Setters
     public Long getId() { return id; }
@@ -77,13 +96,23 @@ public class PredictionSignalEntity {
     
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
+    public Double getRsi() { return rsi; }
+    public void setRsi(Double rsi) { this.rsi = rsi; }
+
+    public String getPlatform() { return platform; }
+    public void setPlatform(String platform) { this.platform = platform; }
+
+    public Double getReversalPoint() { return reversalPoint; }
+    public void setReversalPoint(Double reversalPoint) { this.reversalPoint = reversalPoint; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
     @Override
     public String toString() {
-        return String.format("PredictionSignalEntity{id=%d, symbol='%s', timestamp=%s, signalType=%s, confidence=%.2f%%, reason='%s', price=%.2f}",
-                id, symbol, timestamp, signalType, confidence, reason, price);
+        return String.format("PredictionSignalEntity{id=%d, symbol='%s', timestamp=%s, signalType=%s, confidence=%.2f%%, reason='%s', price=%.2f, rsi=%s, platform=%s, reversalPoint=%s}",
+                id, symbol, timestamp, signalType, confidence, reason, price,
+                rsi, platform, reversalPoint);
     }
 }
