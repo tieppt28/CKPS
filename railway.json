@@ -4,6 +4,9 @@
   },
   "deploy": {
     "startCommand": "java -jar target/stock-prediction-system-1.0.0.jar",
-    "healthcheckPath": "/api/health"
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
   }
 }
