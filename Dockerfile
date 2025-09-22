@@ -19,6 +19,11 @@ FROM openjdk:11-jre-slim
 # Set working directory
 WORKDIR /app
 
+# Install runtime tools for healthcheck
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy the built JAR file
 COPY --from=builder /app/target/stock-prediction-system-1.0.0.jar app.jar
 
@@ -27,7 +32,7 @@ EXPOSE 8080
 
 # Set environment variables
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
-ENV SPRING_PROFILES_ACTIVE=production
+ENV SPRING_PROFILES_ACTIVE=railway
 
 # Run the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
