@@ -13,17 +13,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class StockPredictionApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StockPredictionApplication.class, args);
-        System.out.println("\n=== STOCK PREDICTION SYSTEM STARTED ===");
-        System.out.println("API Base URL: http://localhost:8080/api");
-        System.out.println("H2 Console: http://localhost:8080/api/h2-console");
-        System.out.println("Available endpoints:");
-        System.out.println("  GET /api/stocks/symbols - Get all stock symbols");
-        System.out.println("  GET /api/stocks/{symbol} - Get stock data for symbol");
-        System.out.println("  GET /api/stocks/{symbol}/tradingview - Get data in TradingView format");
-        System.out.println("  GET /api/signals/{symbol} - Get prediction signals for symbol");
-        System.out.println("  GET /api/signals/{symbol}/tradingview - Get signals in TradingView format");
-        System.out.println("==========================================\n");
+        try {
+            SpringApplication.run(StockPredictionApplication.class, args);
+            System.out.println("\n=== STOCK PREDICTION SYSTEM STARTED ===");
+            System.out.println("Health check: /health");
+            System.out.println("Test endpoint: /test");
+            System.out.println("==========================================\n");
+        } catch (Exception e) {
+            System.err.println("Failed to start application: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     @Bean
