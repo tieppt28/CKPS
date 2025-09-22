@@ -8,4 +8,4 @@ cmds = ["mvn dependency:resolve"]
 cmds = ["mvn clean package -DskipTests -Dmaven.test.skip=true"]
 
 [start]
-cmd = "java -jar target/stock-prediction-system-1.0.0.jar"
+cmd = "java -Dspring.profiles.active=railway -jar target/stock-prediction-system-1.0.0.jar"

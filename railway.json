@@ -3,7 +3,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "java -jar target/stock-prediction-system-1.0.0.jar",
+    "startCommand": "java -Dspring.profiles.active=railway -jar target/stock-prediction-system-1.0.0.jar",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
