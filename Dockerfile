@@ -20,13 +20,14 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # Copy the built JAR file
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/target/stock-prediction-system-1.0.0.jar app.jar
 
 # Expose port
 EXPOSE 8080
 
 # Set environment variables
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
+ENV SPRING_PROFILES_ACTIVE=production
 
 # Run the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
