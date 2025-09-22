@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: stock-prediction-system
+  
+  # Database Configuration for Production
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/stockdb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:password}
+  
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  
+  # Disable H2 Console in production
+  h2:
+    console:
+      enabled: false
+
+# Server Configuration
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+# Logging
+logging:
+  level:
+    com.stockprediction: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+
+# CORS Configuration for Production
+cors:
+  allowed-origins: ${FRONTEND_URL:https://your-frontend-domain.vercel.app}
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
+  allow-credentials: true
