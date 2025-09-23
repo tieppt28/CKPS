@@ -1,0 +1,204 @@
+.market-analysis-container {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  color: #ffffff;
+}
+
+.signal-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(22,163,74,0.15) 0%, rgba(37,99,235,0.15) 100%);
+  border: 1px solid rgba(37,99,235,0.35);
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.signal-alert i {
+  color: #22c55e;
+}
+
+.section-title {
+  color: #ffffff;
+  font-size: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  i {
+    color: #2563eb;
+  }
+}
+
+// Technical Indicators Section
+.technical-indicators-section {
+  margin-bottom: 30px;
+}
+
+.indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.indicator-card {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 15px;
+  text-align: center;
+}
+
+.indicator-label {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.indicator-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.indicator-status {
+  font-size: 11px;
+  
+  .status {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+    
+    &.overbought {
+      background-color: #fef2f2;
+      color: #dc2626;
+    }
+    
+    &.oversold {
+      background-color: #f0fdf4;
+      color: #16a34a;
+    }
+    
+    &.neutral {
+      background-color: #f9fafb;
+      color: #6b7280;
+    }
+  }
+}
+
+// Signals Section
+.signals-section {
+  .signals-table-container {
+    overflow-x: auto;
+  }
+}
+
+.signals-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #2a2a2a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.signals-table th {
+  background-color: #374151;
+  color: #ffffff;
+  padding: 12px 8px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #444;
+}
+
+.signals-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #333;
+  font-size: 13px;
+}
+
+.signal-row:hover {
+  background-color: #333;
+}
+
+.no-data {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 20px;
+}
+
+.timestamp {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.symbol {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.confidence {
+  font-weight: 600;
+}
+
+.trend {
+  .signal-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}
+
+.reversal-point {
+  color: #f59e0b;
+  font-size: 11px;
+}
+
+.action {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.price {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .indicators-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .indicator-card {
+    padding: 10px;
+  }
+  
+  .signals-table {
+    font-size: 11px;
+  }
+  
+  .signals-table th,
+  .signals-table td {
+    padding: 8px 4px;
+  }
+}

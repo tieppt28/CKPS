@@ -1,0 +1,35 @@
+server {
+    listen                 80
+    listen                 443 ssl;
+    server_name            chart.finbox.vn;
+    ssl_certificate        /etc/ssl/certbundle.crt;
+    ssl_certificate_key    /etc/ssl/certprivatekey.pem;
+
+    location / {
+      proxy_pass http://localhost:9000;
+    }
+}
+
+server {
+    listen                 80
+    listen                 443 ssl;
+    server_name            chart_api.finbox.vn;
+    ssl_certificate        /etc/ssl/certbundle.crt;
+    ssl_certificate_key    /etc/ssl/certprivatekey.pem;
+
+    location / {
+      proxy_pass http://localhost:9001;
+    }
+}
+
+server {
+    listen                 80
+    listen                 443 ssl;
+    server_name            chart_saveload.finbox.vn;
+    ssl_certificate        /etc/ssl/certbundle.crt;
+    ssl_certificate_key    /etc/ssl/certprivatekey.pem;
+
+    location / {
+      proxy_pass http://localhost:9002;
+    }
+}

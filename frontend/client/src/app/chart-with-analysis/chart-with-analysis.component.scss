@@ -1,0 +1,78 @@
+.chart-with-analysis-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+.chart-section {
+  flex: 1;
+  min-height: 60vh;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin: 10px;
+  padding: 15px;
+}
+
+.chart-header {
+  margin-bottom: 15px;
+}
+
+.chart-title {
+  color: #ffffff;
+  font-size: 24px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  i {
+    color: #2563eb;
+  }
+}
+
+.chart-container {
+  height: 500px;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #2a2a2a;
+}
+
+.analysis-section {
+  flex: 0 0 auto;
+  margin: 0 10px 10px 10px;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .chart-with-analysis-container {
+    flex-direction: column;
+  }
+  
+  .chart-section {
+    min-height: 50vh;
+  }
+  
+  .chart-container {
+    height: 400px;
+  }
+  
+  .chart-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    height: 300px;
+  }
+  
+  .chart-title {
+    font-size: 18px;
+  }
+}
+
+

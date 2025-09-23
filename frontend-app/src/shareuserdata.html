@@ -1,0 +1,16 @@
+<script>
+  var PERMITTED_DOMAIN = "https://www.finbox.vn";
+  /**
+   * Receiving message from other domain
+   */
+  window.addEventListener('message', function (event) {
+    if (event.origin === PERMITTED_DOMAIN) {
+      console.log(event.data)
+      if (event.data) {
+        localStorage.setItem("userData", JSON.stringify(event.data));
+      } else {
+        localStorage.removeItem("userData");
+      }
+    }
+  });
+</script>

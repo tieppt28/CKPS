@@ -1,0 +1,7 @@
+<div #wrapper style="position: relative;">
+  <img *ngIf="isMiniChart" #logo [src]="logoFinbox"
+       [style.left] = "((wrapper.offsetWidth - logo.offsetWidth) / 2) + 'px'"
+       [style.top] = "((wrapper.offsetHeight - logo.offsetHeight) / 2) + 'px'"
+       style="position: fixed; opacity: 0.08; width: 120px; pointer-events: none;" draggable="false">
+  <div class="app-tv-chart-container" id="app-tv-chart-container" [ngStyle]="_styleChart"  [id]="_container"></div>
+</div>

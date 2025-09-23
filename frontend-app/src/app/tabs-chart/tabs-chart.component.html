@@ -1,0 +1,22 @@
+<div style="height: 100vh;">
+  <div class="tab">
+    <span class="group-button">
+      <button class="tablinks button-popup {{styleTabPopupActive}}" (click)="openTabPopup()">POP-UP
+      <i class="icon-close fa fa-thumb-tack "></i></button>
+    </span>
+    <span *ngFor="let ticker of chartService.tickers ; let i = index" class="group-button  {{active[i]}}">
+      <button class="tablinks {{active[i]}}" (click)="onChangeTicker(i)">{{ticker.ticker}}
+        <i (click)="removeTicker(i)" class="icon-close fa fa-close"></i>
+      </button>
+<!--      <button class="close" (click)="removeTicker(i)"><mat-icon style="font-size: 15px; font-weight: bold;color: #16447f;">close</mat-icon></button>-->
+    </span>
+    <span class="group-button" title="Thêm biểu đồ!">
+      <button class="add-icon" (click)="addTicker()"><mat-icon style="color: #16447f;">add</mat-icon></button>
+    </span>
+  </div>
+  <div #container>
+
+  </div>
+  <app-tv-chart-container [styleChart]="styleChartTab" [ngStyle]="styleTabChartPopup" [containerId]="'pop-up-id'"></app-tv-chart-container>
+</div>
+

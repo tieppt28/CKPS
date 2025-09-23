@@ -1,0 +1,83 @@
+.chart-with-analysis-container {
+  display: flex;
+  flex-direction: column;
+  /* Cho phép nội dung dưới chart (chỉ số kỹ thuật) luôn hiển thị được */
+  min-height: 100vh;
+  height: auto;
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+.chart-section {
+  flex: 1;
+  min-height: 60vh;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  /* Loại bo góc để chart không bị cắt góc */
+  border-radius: 0;
+  margin: 10px;
+  /* Thu hẹp padding để chart chiếm tối đa không gian */
+  padding: 10px 10px 0 10px;
+}
+
+.chart-header {
+  margin-bottom: 15px;
+}
+
+.chart-title {
+  color: #ffffff;
+  font-size: 24px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  i {
+    color: #2563eb;
+  }
+}
+
+.chart-container {
+  /* Tăng chiều cao để chart gần như full màn hình phần trên */
+  height: 650px;
+  width: 100%;
+  /* Tránh cắt góc chart bởi container */
+  border-radius: 0;
+  overflow: visible;
+  background-color: transparent;
+}
+
+.analysis-section {
+  flex: 0 0 auto;
+  /* Đẩy phần chỉ số kỹ thuật xuống sâu hơn */
+  margin: 60px 10px 10px 10px;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .chart-with-analysis-container {
+    flex-direction: column;
+  }
+  
+  .chart-section {
+    min-height: 50vh;
+  }
+  
+  .chart-container {
+    height: 400px;
+  }
+  
+  .chart-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    height: 300px;
+  }
+  
+  .chart-title {
+    font-size: 18px;
+  }
+}

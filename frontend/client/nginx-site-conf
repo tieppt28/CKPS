@@ -1,0 +1,30 @@
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache 1h cho file tĩnh
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?|ttf)$ {
+        root /usr/share/nginx/html;
+        expires 3600s;
+        add_header Cache-Control "public, max-age=3600";
+    }
+
+    # Có thể thêm cache riêng cho HTML nếu muốn
+    location ~* \.html$ {
+        root /usr/share/nginx/html;
+        expires 3600s;
+        add_header Cache-Control "public, max-age=3600";
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}

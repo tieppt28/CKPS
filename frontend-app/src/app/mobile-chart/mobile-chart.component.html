@@ -1,0 +1,60 @@
+<div style="height: 100vh; overflow: hidden; display: flex;flex-direction: column;justify-content: space-around;">
+  <div style="display: flex; justify-content: center; align-items: center; flex: 1">
+    <mat-button-toggle-group class="mobile-chart-header-bar" name="ingredients" aria-label="Ingredients"
+      style="border: none; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center;"
+      [ngClass]="theme" multiple>
+      <mat-button-toggle [ngClass]="interval=== '1'?'active' + theme:' ' + theme"
+        (click)="selectTime('1')">1m</mat-button-toggle>
+      <mat-button-toggle [ngClass]="interval=== '5'?'active' + theme:' ' + theme"
+        (click)="selectTime('5')">5m</mat-button-toggle>
+      <mat-button-toggle [ngClass]="interval=== '15'?'active' + theme:' ' + theme"
+        (click)="selectTime('15')">15m</mat-button-toggle>
+      <mat-button-toggle [ngClass]="interval=== '60'?'active' + theme:' ' + theme"
+        (click)="selectTime('60')">1h</mat-button-toggle>
+      <mat-button-toggle [ngClass]="interval=== '1D'?'active' + theme:' ' + theme"
+        (click)="selectTime('1D')">1D</mat-button-toggle>
+      <mat-button-toggle [ngClass]="interval=== 'W'?'active' + theme:' ' + theme"
+        (click)="selectTime('W')">1W</mat-button-toggle>
+      <div style="border-right: 1px solid #cfcfcf;height: 22px;margin-top: 8px;"></div>
+      <select class="select-time" [ngClass]="theme" [(ngModel)]="interval "
+        (ngModelChange)="eventChart(interval, false)">
+        <option value="1">1 phút</option>
+        <option value="5">5 phút</option>
+        <option value="15">15 phút</option>
+        <option value="30">30 phút</option>
+        <option value="60">1 giờ</option>
+        <option value="240">4 giờ</option>
+        <option value="1D">1 ngày</option>
+        <option value="W">1 tuần</option>
+        <option value="M">1 tháng</option>
+      </select>
+    </mat-button-toggle-group>
+  </div>
+  <div #container>
+
+  </div>
+  <app-tv-chart-container [styleChart]="styleChartTab" (messageEvent)="receiveMessage($event)" [miniChart]="true"
+    [containerId]="'mobile-chart'"></app-tv-chart-container>
+  <div style="display: flex; justify-content: space-between; width: 100%;" [ngClass]="theme">
+    <mat-button-toggle-group name="ingredients" aria-label="Ingredients" multiple [ngClass]="theme"
+      style="width: 100%; display: flex; justify-content: space-between; align-items: center; ">
+      <mat-button-toggle [ngClass]="chartService.indicator['Moving Average']?'active' + theme:' ' + theme"
+        (click)="eventChart('Moving Average', true)">MA</mat-button-toggle>
+      <mat-button-toggle [ngClass]="chartService.indicator['Moving Average Exponential']?'active' + theme:' ' + theme"
+        (click)="eventChart('Moving Average Exponential', true)">EMA</mat-button-toggle>
+      <mat-button-toggle [ngClass]="chartService.indicator['Bollinger Bands']?'active' + theme:' ' + theme"
+        (click)="eventChart('Bollinger Bands', true)">BOLL</mat-button-toggle>
+      <div style="border-right: 1px solid #cfcfcf;height: 22px;margin-top: 8px;"></div>
+      <mat-button-toggle [ngClass]="chartService.indicator['MACD']?'active' + theme:' ' + theme"
+        (click)="eventChart('MACD', true)">MACD</mat-button-toggle>
+      <mat-button-toggle [ngClass]="chartService.indicator['Relative Strength Index']?'active' + theme:' ' + theme"
+        (click)="eventChart('Relative Strength Index', true)">RSI</mat-button-toggle>
+      <!-- <mat-button-toggle id="btn-show-mark-mobile" class="minimal-toggle" style="font-weight: bold; color: grey; background: transparent !important; background: blue;">AI</mat-button-toggle> -->
+      <!--      <mat-icon aria-hidden="false" aria-label="Example home icon">zoom_out_map</mat-icon>-->
+    </mat-button-toggle-group>
+    <div id="btn-show-mark-mobile"
+      style="background: gray; display: flex; align-items: center; justify-content: center; border-radius: 5px; color: white; font-family: system-ui; width: 25px; min-width: 25px; height: 25px; min-height: 25px; margin: auto 0; margin-left: 5px; font-size: 12px; font-weight: bold; cursor: pointer;">
+      AI</div>
+    <div style="width: 100px; background: transparent;" [ngClass]="theme"></div>
+  </div>
+</div>

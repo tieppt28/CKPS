@@ -1,0 +1,84 @@
+
+/* định dạng thẻ  chưa các button tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  height: 30px;
+}
+
+/* định dạng các button tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  color: #738694;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+  height: 100%;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+/* đổi màu khi một button tab được hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* đổi màu nền cho tab đang được hiển thị nội dung */
+.tab button.active {
+  background-color: #ccc;
+  color: #0c0e15;
+  border-bottom: solid 2px #1c2030;
+}
+.tab .group-button.active .close {
+  background-color: #ccc;
+  color: #0c0e15;
+  visibility: visible;
+  border-bottom: solid 2px #1c2030;
+}
+
+.tab .group-button .close {
+  color: #738694;
+  visibility: hidden;
+  padding-left: 10px;
+}
+
+.tab .group-button:hover .close {
+  background-color: #ddd;
+  color: #0c0e15;
+  visibility: visible;
+}
+
+.close:hover .tablinks {
+  background-color: #ddd;
+}
+
+/* định dạng nội dung hiển thị */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.minimal-toggle {
+  padding: 0 !important;
+  margin: 0 !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: 1 !important;
+}
+
+mat-button-toggle {
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.08) !important; // màu hover nhẹ
+    cursor: pointer;
+  }
+}

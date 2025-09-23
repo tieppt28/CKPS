@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: server
+    environment:
+        - "TZ=Asia/Ho_Chi_Minh"
+    ports:
+      - "3000:3000"
+    restart: always
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - '127.0.0.1:27018:27017'
+  redis:
+      image: redis:alpine
+      command: redis-server --bind redis --requirepass Finbox@123 --appendonly yes
+      volumes:
+        - redis_data:/data
+      ports:
+      -   "6378:6379"
+  saveload_custom:
+    build:
+       context: saveload
+    ports:
+      - "1200:1200"
+    depends_on:
+      - mongo
+    restart: always
+  client:
+    build:
+      context: client
+    ports:
+      - "9001:80"
+    restart: always
+volumes:
+  redis_data:
+#  nginx:
+#    build:
+#      context: nginx
+#    ports:
+#      - "90:90"
+#    restart: always
+#    depends_on:
+#      - client

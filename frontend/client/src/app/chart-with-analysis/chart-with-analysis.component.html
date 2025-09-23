@@ -1,0 +1,24 @@
+<div class="chart-with-analysis-container">
+  <!-- TradingView Chart Section -->
+  <div class="chart-section">
+    <div class="chart-header">
+      <h2 class="chart-title">
+        <i class="fas fa-chart-area"></i>
+        Biểu đồ Giá cổ phiếu
+      </h2>
+    </div>
+    <div #chartContainer class="chart-container">
+      <app-tv-chart-container 
+        (messageEvent)="receiveMessage($event)" 
+        [containerId]="'chart-with-analysis'">
+      </app-tv-chart-container>
+    </div>
+  </div>
+
+  <!-- Market Analysis Section -->
+  <div class="analysis-section">
+    <app-market-analysis></app-market-analysis>
+  </div>
+</div>
+
+

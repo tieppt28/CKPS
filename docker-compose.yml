@@ -1,28 +1,64 @@
-version: '3.8'
+version: "3.9"
 
 services:
+  redis:
+    image: redis:7
+    container_name: ckps-redis
+    ports:
+      - "6379:6379"
+
+  mongo:
+    image: mongo:6
+    container_name: ckps-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
   backend:
-    build: .
+    build: ./backend
+    container_name: ckps-backend
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=production
-      - SPRING_DATASOURCE_URL=${DATABASE_URL}
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
     depends_on:
-      - postgres
+      - redis
+      - mongo
 
-  postgres:
-    image: postgres:13
+  datafeed:
+    build: ./datafeed-server
+    container_name: ckps-datafeed
     environment:
-      - POSTGRES_DB=stockdb
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - PORT=3002
+      - BACKEND_URL=http://backend:8080
     ports:
-      - "5432:5432"
+      - "3002:3002"
+    depends_on:
+      - redis
+
+  storage:
+    build: ./storage-server
+    container_name: ckps-storage
+    environment:
+      - PORT=3003
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URI=mongodb://mongo:27017/chart-finbox
+    ports:
+      - "3003:3003"
+    depends_on:
+      - redis
+      - mongo
+
+  frontend:
+    build: ./frontend-app
+    container_name: ckps-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+      - datafeed
+      - storage
 
 volumes:
-  postgres_data:
+  mongo_data:
+
+# Removed legacy compose section to avoid duplicate keys

@@ -1,0 +1,107 @@
+<div class="market-analysis-container">
+  <!-- Alert tín hiệu mới -->
+  <div *ngIf="alertMessage" class="signal-alert">
+    <i class="fas fa-bell"></i>
+    <span>{{ alertMessage }}</span>
+  </div>
+  <!-- Phần chỉ số kỹ thuật -->
+  <div class="technical-indicators-section" *ngIf="technicalIndicators">
+    <h3 class="section-title">
+      <i class="fas fa-chart-line"></i>
+      Chỉ số Kỹ thuật
+    </h3>
+    <div class="indicators-grid">
+      <div class="indicator-card">
+        <div class="indicator-label">RSI</div>
+        <div class="indicator-value" [style.color]="technicalIndicators.rsi > 70 ? '#ef4444' : technicalIndicators.rsi < 30 ? '#10b981' : '#6b7280'">
+          {{technicalIndicators.rsi.toFixed(2)}}
+        </div>
+        <div class="indicator-status">
+          <span *ngIf="technicalIndicators.rsi > 70" class="status overbought">Quá mua</span>
+          <span *ngIf="technicalIndicators.rsi < 30" class="status oversold">Quá bán</span>
+          <span *ngIf="technicalIndicators.rsi >= 30 && technicalIndicators.rsi <= 70" class="status neutral">Trung tính</span>
+        </div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">EMA 20</div>
+        <div class="indicator-value">{{formatPrice(technicalIndicators.ema20)}}</div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">EMA 50</div>
+        <div class="indicator-value">{{formatPrice(technicalIndicators.ema50)}}</div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">MACD</div>
+        <div class="indicator-value" [style.color]="technicalIndicators.macd > 0 ? '#10b981' : '#ef4444'">
+          {{technicalIndicators.macd.toFixed(4)}}
+        </div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">MACD Signal</div>
+        <div class="indicator-value">{{technicalIndicators.macdSignal.toFixed(4)}}</div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">MACD Histogram</div>
+        <div class="indicator-value" [style.color]="technicalIndicators.macdHistogram > 0 ? '#10b981' : '#ef4444'">
+          {{technicalIndicators.macdHistogram.toFixed(4)}}
+        </div>
+      </div>
+
+      <div class="indicator-card">
+        <div class="indicator-label">ATR</div>
+        <div class="indicator-value">{{technicalIndicators.atr.toFixed(4)}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phần tín hiệu giao dịch -->
+  <div class="signals-section">
+    <h3 class="section-title">
+      <i class="fas fa-signal"></i>
+      Tín hiệu Giao dịch
+    </h3>
+    
+    <div class="signals-table-container">
+      <table class="signals-table">
+        <thead>
+          <tr>
+            <th>Thời gian</th>
+            <th>Mã</th>
+            <th>Độ tin cậy</th>
+            <th>Xu hướng</th>
+            <th>Điểm đảo chiều</th>
+            <th>Lệnh</th>
+            <th>Giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="signals.length === 0">
+            <td colspan="7" class="no-data">Đang tải dữ liệu...</td>
+          </tr>
+          <tr *ngFor="let signal of signals; let i = index" class="signal-row">
+            <td class="timestamp">{{formatDateTime(signal.timestamp)}}</td>
+            <td class="symbol">{{signal.symbol}}</td>
+            <td class="confidence" [style.color]="getConfidenceColor(signal.confidence)">
+              {{signal.confidence.toFixed(1)}}%
+            </td>
+            <td class="trend">
+              <span class="signal-badge" [style.background-color]="getSignalColor(signal.signalType)">
+                {{getSignalTypeLabel(signal.signalType)}}
+              </span>
+            </td>
+            <td class="reversal-point">{{getReversalPointDisplay(signal)}}</td>
+            <td class="action" [style.color]="getSignalColor(signal.signalType)">
+              {{getSignalTypeLabel(signal.signalType)}}
+            </td>
+            <td class="price">{{formatPrice(signal.price)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

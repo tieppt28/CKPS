@@ -1,0 +1,252 @@
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 49px;
+  height: 20px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d3dae0;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 17px;
+  width: 17px;
+  left: 2px;
+  bottom: 1.5px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #137cbd;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(55px);
+  -ms-transform: translateX(55px);
+  transform: translateX(29px);
+}
+
+/*------ ADDED CSS ---------*/
+.on {
+  display: none;
+}
+
+.on {
+  color: white;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 30%;
+  font-size: 12px;
+  font-family: Trebuchet MS, roboto, ubuntu, sans-serif;
+}
+
+.off {
+  color: #151515;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 66%;
+  font-size: 12px;
+  font-family: Trebuchet MS, roboto, ubuntu, sans-serif;
+}
+
+input:checked + .slider .on {
+  display: block;
+}
+
+input:checked + .slider .off {
+  display: none;
+}
+
+/*--------- END --------*/
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+/*
+Logo
+ */
+
+.imgLogo {
+  height: 30px;
+  cursor: pointer;
+}
+
+
+.custom-toolbar-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  margin: 2px;
+  border-radius: 2px;
+  color: #131722 !important;
+  padding-left: 8px;
+  padding-right: 8px;
+  max-width: 150px;
+  min-width: 0px;
+}
+
+.custom-toolbar-button-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 34px;
+  padding: 0px !important;
+}
+
+.custom-toolbar-button:hover {
+  background-color: rgba(240, 243, 250, 1);
+}
+
+.theme-dark .custom-toolbar-button:hover {
+  background-color: rgba(42, 46, 57, 1);
+}
+
+.theme-dark .custom-toolbar-button {
+  color: #787b86 !important;
+}
+
+.custom-toolbar-button-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-toolbar-dropdown-icon {
+  width: 15px;
+  height: 100%;
+  margin-left: 6px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15' width='15' height='15'><path fill='%23131722' d='M3.5 5.58c.24-.28.65-.3.92-.07L7.5 8.14l3.08-2.63a.65.65 0 1 1 .84.98L7.5 9.86 3.58 6.49a.65.65 0 0 1-.07-.91z'></path></svg>");
+}
+
+
+.theme-dark .custom-toolbar-dropdown-icon {
+  color: #787b86 !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15' width='15' height='15'><path fill='%23787b86' d='M3.5 5.58c.24-.28.65-.3.92-.07L7.5 8.14l3.08-2.63a.65.65 0 1 1 .84.98L7.5 9.86 3.58 6.49a.65.65 0 0 1-.07-.91z'></path></svg>");
+}
+
+.theme-dark .custom-toolbar-menu-sep {
+  border-bottom: 1px solid rgba(54, 60, 78, 1);
+}
+
+.theme-dark .custom-toolbar-menu-item:hover {
+  background-color: rgba(42, 46, 57, 1);
+}
+
+.theme-dark .custom-toolbar-menu {
+  background-color: #1e222d;
+  box-shadow: 0 2px 4px 0 #000;
+}
+
+.custom-toolbar-menu {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  background-color: white;
+  box-shadow: 0 2px 4px 0 rgb(107 121 136 / 40%);
+  border-radius: 3px;
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+}
+
+.custom-toolbar-menu:focus-within {
+  background: #ff8;
+  color: black;
+}
+
+.custom-toolbar-menu-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px;
+}
+
+.custom-toolbar-menu-sep {
+  border-bottom: 1px solid rgba(225, 236, 242, 1);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.custom-toolbar-menu-item:hover {
+  background-color: rgba(240, 243, 250, 1);
+}
+
+
+.loading-save-chartsss {
+  cursor: pointer;
+  border: 1px solid #f3f3f3;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border-top: 1px solid grey;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+.loading-save-chart {
+  float: left;
+  margin-left: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+  border: 1px dashed grey;
+  color: grey;
+  text-align: center;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+}
+
+.marketStatusClose-1Ho_ylkC svg {
+  margin-left: 11px;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
