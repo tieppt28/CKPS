@@ -3,12 +3,14 @@ package stockprediction.engine;
 import stockprediction.model.StockData;
 import stockprediction.model.PredictionSignal;
 import stockprediction.indicators.TechnicalIndicators;
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
  * Main prediction engine that analyzes stock data and generates trading signals
  */
+@Service
 public class PredictionEngine {
 
     private static final int EMA_20_PERIOD = 20;

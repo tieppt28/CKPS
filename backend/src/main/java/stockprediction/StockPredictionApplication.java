@@ -18,6 +18,8 @@ public class StockPredictionApplication {
             System.out.println("\n=== STOCK PREDICTION SYSTEM STARTED ===");
             System.out.println("Health check: /health");
             System.out.println("Test endpoint: /test");
+            System.out.println("Real-time signal generation: ENABLED (every 5 minutes)");
+            System.out.println("Auto candle creation: ENABLED");
             System.out.println("==========================================\n");
         } catch (Exception e) {
             System.err.println("Failed to start application: " + e.getMessage());

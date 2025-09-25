@@ -2,6 +2,8 @@ package stockprediction.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Entity class for PredictionSignal stored in database
@@ -103,11 +105,39 @@ public class PredictionSignalEntity {
     public String getPlatform() { return platform; }
     public void setPlatform(String platform) { this.platform = platform; }
 
-    public Double getReversalPoint() { return reversalPoint; }
+    public Double getReversalPoint() {
+        if (reversalPoint != null) {
+            return reversalPoint;
+        }
+        // Fallback: cố gắng suy ra từ reason nếu có định dạng quen thuộc
+        if (reason == null || reason.isEmpty()) {
+            return null;
+        }
+        Double parsed = parseReversalFromReason(reason);
+        return parsed;
+    }
     public void setReversalPoint(Double reversalPoint) { this.reversalPoint = reversalPoint; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    // Helpers
+    private static Double parseReversalFromReason(String text) {
+        try {
+            String lower = text.toLowerCase();
+            // Chuẩn hóa dấu phẩy thành dấu chấm cho số thập phân
+            String normalized = lower.replace(',', '.');
+            // Các từ khóa thường gặp để chỉ điểm đảo chiều
+            String patternString = "(reversal(?:_point)?|reversalpoint|điểm đảo chiều|diem dao chieu|dao chieu|dao long|dao short)\\s*[:=]?\\s*([0-9]+(?:\\.[0-9]+)?)";
+            Pattern pattern = Pattern.compile(patternString);
+            Matcher matcher = pattern.matcher(normalized);
+            if (matcher.find()) {
+                String number = matcher.group(2);
+                return Double.parseDouble(number);
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
     
     @Override
     public String toString() {

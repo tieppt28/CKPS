@@ -413,6 +413,18 @@ RequestProcessor.prototype._checkStatus = function (symbol, response) {
     });
 };
 
+const getIndicator = require("./indicator")
+RequestProcessor.prototype._sendIndicator = function (symbol, indicator, timestamp, response) {
+    // get indicator data from redis
+    getIndicator(symbol, indicator, timestamp).then(result => {
+        response.writeHead(200, defaultResponseHeader);
+        response.end(JSON.stringify(result));
+    }).catch(reason => {
+        console.error('getIndicator', symbol, indicator, timestamp, reason);
+        sendError('indicator', response);
+    });
+};
+
 RequestProcessor.prototype.processRequest = function (action, query, response) {
     try {
         if (action === '/config') {
@@ -439,6 +451,8 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
             this._sendFuturesmag(response);
         } else if (action === '/status') {
             this._checkStatus(query['symbol'], response);
+        } else if (action === '/indicator') {
+            this._sendIndicator(query['symbol'], query['indicator'], query['timestamp'], response);
         } else {
             response.writeHead(200, defaultResponseHeader);
             response.write('Datafeed version is ' + version + '. Finbox @2023');

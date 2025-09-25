@@ -14,6 +14,7 @@ export interface PredictionSignal {
   rsi?: number;
   platform?: string;
   reversalPoint?: number;
+  createdAt?: string;
 }
 
 export interface TechnicalIndicators {
@@ -26,6 +27,18 @@ export interface TechnicalIndicators {
   atr: number;
 }
 
+export interface TrendForecast {
+  direction: string;
+  confidence: number;
+  targetPrice: number;
+  summary: string;
+  horizonDays: number;
+  // Thêm thông tin dễ hiểu
+  directionText?: string;
+  confidenceLevel?: string;
+  confidenceText?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,40 +49,35 @@ export class BackendApiService {
 
   // Lấy danh sách tín hiệu gần đây
   getRecentSignals(): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/recent`);
-  }
-
-  // Lấy tín hiệu gần đây theo số ngày (mặc định 1 ngày)
-  getRecentSignalsWithinDays(days: number = 1): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/recent?days=${days}`);
-  }
-
-  // Lấy tín hiệu mới nhất (client sẽ tự chọn phần tử mới nhất theo timestamp)
-  getLatestSignal(days: number = 1): Observable<PredictionSignal[]> {
-    return this.getRecentSignalsWithinDays(days);
+    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/signals/recent`);
   }
 
   // Lấy tín hiệu theo symbol
   getSignalsBySymbol(symbol: string): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/symbol/${symbol}`);
+    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/signals/${symbol}`);
   }
 
   // Lấy chỉ số kỹ thuật
   getTechnicalIndicators(symbol?: string): Observable<TechnicalIndicators> {
     const url = symbol 
-      ? `${this.apiUrl}/api/technical-indicators/${symbol}`
-      : `${this.apiUrl}/api/technical-indicators`;
+      ? `${this.apiUrl}/technical-indicators/${symbol}`
+      : `${this.apiUrl}/technical-indicators`;
     return this.http.get<TechnicalIndicators>(url);
   }
 
   // Lấy dữ liệu giá cổ phiếu
   getStockData(symbol: string, timeframe: string = '1D'): Observable<any> {
-    return this.http.get(`${this.apiUrl}/api/stock-data/${symbol}?timeframe=${timeframe}`);
+    return this.http.get(`${this.apiUrl}/stock-data/${symbol}?timeframe=${timeframe}`);
   }
 
   // Lấy danh sách symbols
   getSymbols(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/api/symbols`);
+    return this.http.get<string[]>(`${this.apiUrl}/symbols`);
+  }
+
+  // Dự báo xu hướng ngắn hạn
+  forecastShortTerm(symbol: string, horizonDays: number): Observable<TrendForecast> {
+    return this.http.get<TrendForecast>(`${this.apiUrl}/forecast/${symbol}?horizonDays=${horizonDays}`);
   }
 
   // Health check

@@ -5,7 +5,7 @@
     <span>{{ alertMessage }}</span>
   </div>
   <!-- Phần chỉ số kỹ thuật -->
-  <div class="technical-indicators-section" *ngIf="technicalIndicators">
+  <div class="technical-indicators-section">
     <h3 class="section-title">
       <i class="fas fa-chart-line"></i>
       Chỉ số Kỹ thuật
@@ -13,10 +13,11 @@
     <div class="indicators-grid">
       <div class="indicator-card">
         <div class="indicator-label">RSI</div>
-        <div class="indicator-value" [style.color]="technicalIndicators.rsi > 70 ? '#ef4444' : technicalIndicators.rsi < 30 ? '#10b981' : '#6b7280'">
+        <div class="indicator-value" *ngIf="technicalIndicators" [style.color]="technicalIndicators.rsi > 70 ? '#ef4444' : technicalIndicators.rsi < 30 ? '#10b981' : '#6b7280'">
           {{technicalIndicators.rsi.toFixed(2)}}
         </div>
-        <div class="indicator-status">
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
+        <div class="indicator-status" *ngIf="technicalIndicators">
           <span *ngIf="technicalIndicators.rsi > 70" class="status overbought">Quá mua</span>
           <span *ngIf="technicalIndicators.rsi < 30" class="status oversold">Quá bán</span>
           <span *ngIf="technicalIndicators.rsi >= 30 && technicalIndicators.rsi <= 70" class="status neutral">Trung tính</span>
@@ -25,37 +26,74 @@
 
       <div class="indicator-card">
         <div class="indicator-label">EMA 20</div>
-        <div class="indicator-value">{{formatPrice(technicalIndicators.ema20)}}</div>
+        <div class="indicator-value" *ngIf="technicalIndicators">{{formatPrice(technicalIndicators.ema20)}}</div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
 
       <div class="indicator-card">
         <div class="indicator-label">EMA 50</div>
-        <div class="indicator-value">{{formatPrice(technicalIndicators.ema50)}}</div>
+        <div class="indicator-value" *ngIf="technicalIndicators">{{formatPrice(technicalIndicators.ema50)}}</div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
 
       <div class="indicator-card">
         <div class="indicator-label">MACD</div>
-        <div class="indicator-value" [style.color]="technicalIndicators.macd > 0 ? '#10b981' : '#ef4444'">
+        <div class="indicator-value" *ngIf="technicalIndicators" [style.color]="technicalIndicators.macd > 0 ? '#10b981' : '#ef4444'">
           {{technicalIndicators.macd.toFixed(4)}}
         </div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
 
       <div class="indicator-card">
         <div class="indicator-label">MACD Signal</div>
-        <div class="indicator-value">{{technicalIndicators.macdSignal.toFixed(4)}}</div>
+        <div class="indicator-value" *ngIf="technicalIndicators">{{technicalIndicators.macdSignal.toFixed(4)}}</div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
 
       <div class="indicator-card">
         <div class="indicator-label">MACD Histogram</div>
-        <div class="indicator-value" [style.color]="technicalIndicators.macdHistogram > 0 ? '#10b981' : '#ef4444'">
+        <div class="indicator-value" *ngIf="technicalIndicators" [style.color]="technicalIndicators.macdHistogram > 0 ? '#10b981' : '#ef4444'">
           {{technicalIndicators.macdHistogram.toFixed(4)}}
         </div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
 
       <div class="indicator-card">
         <div class="indicator-label">ATR</div>
-        <div class="indicator-value">{{technicalIndicators.atr.toFixed(4)}}</div>
+        <div class="indicator-value" *ngIf="technicalIndicators">{{technicalIndicators.atr.toFixed(4)}}</div>
+        <div class="indicator-value" *ngIf="!technicalIndicators">—</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Phần dự báo xu thế ngắn hạn -->
+  <div class="forecast-section" *ngIf="forecast">
+    <h3 class="section-title">
+      <i class="fas fa-magic"></i>
+      Dự báo xu thế gần
+    </h3>
+    <div class="forecast-card">
+      <div class="forecast-controls">
+        <label>Phạm vi (ngày):
+          <select [(ngModel)]="forecastHorizon" (change)="loadForecast()">
+            <option [ngValue]="1">1</option>
+            <option [ngValue]="3">3</option>
+            <option [ngValue]="5">5</option>
+            <option [ngValue]="7">7</option>
+          </select>
+        </label>
+      </div>
+      <div class="forecast-row">
+        <div>
+          <span>Hướng:</span>
+          <strong [style.color]="forecast.direction === 'UP' ? '#10b981' : forecast.direction === 'DOWN' ? '#ef4444' : '#6b7280'">
+            {{forecast.direction === 'UP' ? 'TĂNG' : forecast.direction === 'DOWN' ? 'GIẢM' : 'TRUNG TÍNH'}}
+          </strong>
+        </div>
+        <div><span>Độ tin cậy:</span> <strong>{{forecast.confidence.toFixed(1)}}%</strong></div>
+        <div><span>Mục tiêu {{forecast.horizonDays}} ngày:</span> <strong>{{formatPrice(forecast.targetPrice)}}</strong></div>
+      </div>
+      <div class="forecast-summary">{{forecast.summary}}</div>
     </div>
   </div>
 
@@ -67,12 +105,29 @@
     </h3>
     
     <div class="signals-table-container">
+      <!-- Bộ lọc mã tín hiệu -->
+      <div style="display:flex; gap:8px; align-items:center; margin:8px 0 12px 0;">
+        <label style="color:#9ca3af; font-size:12px;">Lọc mã:</label>
+        <input 
+          type="text" 
+          name="symbolFilterInput"
+          [(ngModel)]="symbolFilter"
+          placeholder="Nhập mã..." 
+          style="background:#1f2937; border:1px solid #374151; color:#fff; padding:6px 8px; border-radius:4px; width:160px;" />
+        <select 
+          name="symbolFilterSelect"
+          [(ngModel)]="symbolFilter"
+          style="background:#1f2937; border:1px solid #374151; color:#fff; padding:6px 8px; border-radius:4px;">
+          <option value="">Tất cả</option>
+          <option *ngFor="let sym of availableSymbols" [value]="sym">{{sym}}</option>
+        </select>
+      </div>
       <table class="signals-table">
         <thead>
           <tr>
             <th>Thời gian</th>
-            <th>Mã</th>
-            <th>Độ tin cậy</th>
+            <th>RSI</th>
+            <th>Nền tảng</th>
             <th>Xu hướng</th>
             <th>Điểm đảo chiều</th>
             <th>Lệnh</th>
@@ -80,25 +135,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="signals.length === 0">
-            <td colspan="7" class="no-data">Đang tải dữ liệu...</td>
+          <tr *ngIf="signals.length === 0" class="no-data-row">
+            <td colspan="7" class="no-data">Không có tín hiệu cho {{symbol || 'sàn này'}}</td>
           </tr>
-          <tr *ngFor="let signal of signals; let i = index" class="signal-row">
-            <td class="timestamp">{{formatDateTime(signal.timestamp)}}</td>
-            <td class="symbol">{{signal.symbol}}</td>
-            <td class="confidence" [style.color]="getConfidenceColor(signal.confidence)">
-              {{signal.confidence.toFixed(1)}}%
-            </td>
+          <tr *ngFor="let signal of filteredSignals; let i = index" class="signal-row">
+            <td class="timestamp">{{formatShortTime(signal.createdAt || signal.timestamp)}}</td>
+            <td class="rsi">{{getDisplayedRsi(signal)}}</td>
+            <td class="platform">{{getPlatformName(signal)}}</td>
             <td class="trend">
-              <span class="signal-badge" [style.background-color]="getSignalColor(signal.signalType)">
-                {{getSignalTypeLabel(signal.signalType)}}
+              <span class="signal-badge" [style.background-color]="getDisplayedTrendColor(signal)">
+                {{getDisplayedTrendLabel(signal)}}
               </span>
             </td>
-            <td class="reversal-point">{{getReversalPointDisplay(signal)}}</td>
+            <td class="reversal-point">{{getDisplayedReversal(signal)}}</td>
             <td class="action" [style.color]="getSignalColor(signal.signalType)">
-              {{getSignalTypeLabel(signal.signalType)}}
+              {{getDisplayedAction(signal)}}
             </td>
-            <td class="price">{{formatPrice(signal.price)}}</td>
+            <td class="price">{{getDisplayedPrice(signal)}}</td>
           </tr>
         </tbody>
       </table>

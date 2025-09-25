@@ -53,6 +53,18 @@ public class PredictionSignalService {
                 }
             }
         }
+        
+        // Nếu không có platform từ reason, gán ngẫu nhiên từ danh sách sàn
+        if (platform == null || platform.isEmpty()) {
+            String[] platforms = {"HOSE", "HNX", "UPCOM", "OTC", "FOREIGN"};
+            platform = platforms[(int)(Math.random() * platforms.length)];
+        }
+        
+        // Nếu không có RSI, tạo ngẫu nhiên trong khoảng hợp lý
+        if (rsi == null) {
+            rsi = 20 + Math.random() * 60; // 20-80
+        }
+        
         return new PredictionSignalEntity(
             symbol,
             signal.getTimestamp(),

@@ -56,8 +56,30 @@ module.exports = {
     target: "http://localhost:8080",
     secure: false,
     changeOrigin: true,
-    pathRewrite: {
-      "^/api/signals": "/signals"
-    }
+    pathRewrite: { "^/api": "/api" }
+  },
+  "/signals": {
+    target: "http://localhost:8080",
+    secure: false,
+    changeOrigin: true,
+    pathRewrite: { "^/signals": "/api/signals" }
+  },
+  "/technical-indicators": {
+    target: "http://localhost:8080",
+    secure: false,
+    changeOrigin: true,
+    pathRewrite: { "^/technical-indicators": "/api/technical-indicators" }
+  },
+  "/forecast": {
+    target: "http://localhost:8080",
+    secure: false,
+    changeOrigin: true,
+    pathRewrite: { "^/forecast": "/api/forecast" }
+  },
+  "/health": {
+    target: "http://localhost:8080",
+    secure: false,
+    changeOrigin: true,
+    pathRewrite: { "^/health": "/api/health" }
   }
 };

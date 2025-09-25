@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: '/api',
+  apiUrl: '',
   data_feed_url: '/datafeed',
   save_load_url: '/storage'
 };

@@ -16,7 +16,7 @@ import java.util.Map;
  * REST Controller for Technical Indicators
  */
 @RestController
-@RequestMapping("/api/technical-indicators")
+@RequestMapping("/technical-indicators")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "https://ckps.vercel.app"})
 public class TechnicalIndicatorsController {
     
