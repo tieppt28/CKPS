@@ -4,7 +4,7 @@
   "engines": {
     "npm": "^10.2.3",
     "pnpm": "^9.3.0",
-    "node": "^18.20.3"
+    "node": "^22.x"
   },
   "scripts": {
     "ng": "ng",
