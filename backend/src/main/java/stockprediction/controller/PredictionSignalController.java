@@ -24,6 +24,9 @@ public class PredictionSignalController {
     @Autowired
     private PredictionSignalService predictionSignalService;
     
+    @Autowired
+    private stockprediction.service.RealTimeSignalGenerator realTimeSignalGenerator;
+    
     /**
      * Get all prediction signals for a symbol
      */
@@ -171,6 +174,26 @@ public class PredictionSignalController {
             .collect(java.util.stream.Collectors.toList());
         
         return ResponseEntity.ok(tradingViewSignals);
+    }
+    
+    /**
+     * Generate signal immediately for a symbol
+     */
+    @PostMapping("/{symbol}/generate")
+    public ResponseEntity<Map<String, String>> generateSignal(@PathVariable String symbol) {
+        try {
+            realTimeSignalGenerator.generateSignalForSymbol(symbol);
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "SUCCESS");
+            response.put("message", "Signal generated for " + symbol);
+            response.put("timestamp", LocalDateTime.now().toString());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "ERROR");
+            response.put("message", "Failed to generate signal for " + symbol + ": " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
     
     /**

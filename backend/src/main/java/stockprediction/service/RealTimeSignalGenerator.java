@@ -33,13 +33,40 @@ public class RealTimeSignalGenerator {
     // Flag để tạm dừng tạo tín hiệu khi không có nến mới
     private boolean signalGenerationEnabled = true;
     
+    /**
+     * Tạo tín hiệu ngay lập tức cho một symbol cụ thể
+     */
+    public void generateSignalForSymbol(String symbol) {
+        try {
+            System.out.println("=== GENERATING IMMEDIATE SIGNAL FOR " + symbol + " ===");
+            
+            StockDataEntity latest = getFreshLatestCandle(symbol);
+            if (latest == null) {
+                System.out.println("No fresh candle data for " + symbol + " - cannot generate signal");
+                return;
+            }
+            
+            // Tạo tín hiệu dựa trên nến mới nhất
+            PredictionSignalEntity signal = createSignalFromCandle(latest);
+            predictionSignalService.save(signal);
+            
+            // Cập nhật thời gian nến cuối cùng
+            lastCandleTime = latest.getTimestamp();
+            
+            System.out.println("Immediate signal generated for " + symbol + " at " + LocalDateTime.now());
+            
+        } catch (Exception e) {
+            System.err.println("Error generating immediate signal for " + symbol + ": " + e.getMessage());
+        }
+    }
+    
     // Danh sách symbols để tạo tín hiệu
     private final String[] SYMBOLS = {"FPT", "VIC", "VHM", "MSN", "HPG", "BID", "VCB", "GAS", "VNM", "TCB", "VN30F1M"};
     
     /**
      * Tạo tín hiệu chỉ khi có nến mới thực sự
      */
-    @Scheduled(fixedRate = 60000) // kiểm tra mỗi phút
+    @Scheduled(fixedRate = 30000) // kiểm tra mỗi 30 giây để phản hồi nhanh hơn
     public void generateRealTimeSignals() {
         if (!signalGenerationEnabled) {
             System.out.println("=== SIGNAL GENERATION DISABLED ===");
@@ -131,17 +158,17 @@ public class RealTimeSignalGenerator {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime latestTime = latest.getTimestamp();
             
-            // Kiểm tra xem nến cuối cùng có trong vòng 1 phút gần đây không (chặt chẽ hơn)
-            boolean isRecent = latestTime.isAfter(now.minusMinutes(1));
+            // Kiểm tra xem nến cuối cùng có trong vòng 5 phút gần đây không (lỏng hơn)
+            boolean isRecent = latestTime.isAfter(now.minusMinutes(5));
             
-            // Kiểm tra xem nến có mới hơn lần kiểm tra trước không (chặt chẽ hơn)
-            boolean isNewer = latestTime.isAfter(lastCandleTime.plusSeconds(30));
+            // Kiểm tra xem nến có mới hơn lần kiểm tra trước không (lỏng hơn)
+            boolean isNewer = latestTime.isAfter(lastCandleTime.plusSeconds(10));
             
             System.out.println("Candle check for " + symbol + ": latest=" + latestTime + 
                              ", now=" + now + ", lastCheck=" + lastCandleTime +
                              ", isRecent=" + isRecent + ", isNewer=" + isNewer);
             
-            // Chỉ tạo tín hiệu khi có nến mới thực sự trong 1 phút gần đây
+            // Tạo tín hiệu khi có nến mới trong 5 phút gần đây
             return isRecent && isNewer;
             
         } catch (Exception e) {
