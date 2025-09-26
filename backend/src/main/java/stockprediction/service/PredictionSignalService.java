@@ -1,6 +1,8 @@
 package stockprediction.service;
 
 import stockprediction.entity.PredictionSignalEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import stockprediction.model.PredictionSignal;
 import stockprediction.repository.PredictionSignalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +104,18 @@ public class PredictionSignalService {
     public List<PredictionSignalEntity> getBySymbol(String symbol) {
         return predictionSignalRepository.findBySymbolOrderByTimestampDesc(symbol);
     }
+
+    /**
+     * Get latest N prediction signals for a symbol
+     */
+    @Transactional(readOnly = true)
+    public List<PredictionSignalEntity> getLatestNSignals(String symbol, int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        Pageable pageable = PageRequest.of(0, limit);
+        return predictionSignalRepository.findBySymbolOrderByTimestampDesc(symbol, pageable);
+    }
     
     /**
      * Get prediction signals for a symbol within date range
@@ -153,6 +167,18 @@ public class PredictionSignalService {
     @Transactional(readOnly = true)
     public List<PredictionSignalEntity> getRecentSignals(LocalDateTime since) {
         return predictionSignalRepository.findRecentSignals(since);
+    }
+
+    /**
+     * Get latest N signals across all symbols
+     */
+    @Transactional(readOnly = true)
+    public List<PredictionSignalEntity> getLatestNAllSymbols(int limit) {
+        if (limit <= 0) {
+            limit = 10;
+        }
+        Pageable pageable = PageRequest.of(0, limit);
+        return predictionSignalRepository.findAllOrderByTimestampDesc(pageable);
     }
     
     /**

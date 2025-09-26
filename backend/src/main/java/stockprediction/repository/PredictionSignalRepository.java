@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,11 @@ public interface PredictionSignalRepository extends JpaRepository<PredictionSign
      * Find all prediction signals for a specific symbol
      */
     List<PredictionSignalEntity> findBySymbolOrderByTimestampDesc(String symbol);
+    
+    /**
+     * Find latest prediction signals for a symbol with limit
+     */
+    List<PredictionSignalEntity> findBySymbolOrderByTimestampDesc(String symbol, Pageable pageable);
     
     /**
      * Find prediction signals for a symbol within a date range
@@ -68,4 +74,10 @@ public interface PredictionSignalRepository extends JpaRepository<PredictionSign
      * Count signals by type for a symbol
      */
     long countBySymbolAndSignalType(String symbol, PredictionSignalEntity.SignalType signalType);
+
+    /**
+     * Find latest signals across all symbols with limit
+     */
+    @Query("SELECT p FROM PredictionSignalEntity p ORDER BY p.timestamp DESC")
+    List<PredictionSignalEntity> findAllOrderByTimestampDesc(Pageable pageable);
 }

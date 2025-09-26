@@ -41,7 +41,7 @@ export class BackendApiService {
 
   // Lấy tín hiệu theo symbol
   getSignalsBySymbol(symbol: string): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/symbol/${symbol}`);
+    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/signals/${symbol}`);
   }
 
   // Lấy chỉ số kỹ thuật

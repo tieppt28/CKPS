@@ -3,6 +3,8 @@ package stockprediction.controller;
 import stockprediction.entity.PredictionSignalEntity;
 import stockprediction.model.PredictionSignal;
 import stockprediction.service.PredictionSignalService;
+import stockprediction.service.StockDataService;
+import stockprediction.entity.StockDataEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class PredictionSignalController {
     @Autowired
     private PredictionSignalService predictionSignalService;
     
+    @Autowired
+    private StockDataService stockDataService;
+    
     /**
      * Get all prediction signals for a symbol
      */
@@ -31,6 +36,29 @@ public class PredictionSignalController {
     public ResponseEntity<List<PredictionSignalEntity>> getSignalsBySymbol(@PathVariable String symbol) {
         List<PredictionSignalEntity> signals = predictionSignalService.getBySymbol(symbol);
         return ResponseEntity.ok(signals);
+    }
+
+    /**
+     * Get latest signal or recent N if no new candle in last `minutes`
+     */
+    @GetMapping("/{symbol}/latest-or-recent")
+    public ResponseEntity<List<PredictionSignalEntity>> getLatestOrRecent(
+            @PathVariable String symbol,
+            @RequestParam(defaultValue = "10") Integer minutes,
+            @RequestParam(defaultValue = "10") Integer limit) {
+        StockDataEntity latestCandle = stockDataService.getLatestBySymbol(symbol);
+        LocalDateTime now = LocalDateTime.now();
+        boolean noRecentCandle = (latestCandle == null) || latestCandle.getTimestamp() == null
+                || latestCandle.getTimestamp().isBefore(now.minusMinutes(minutes));
+        if (noRecentCandle) {
+            List<PredictionSignalEntity> recent = predictionSignalService.getLatestNSignals(symbol, limit);
+            return ResponseEntity.ok(recent);
+        }
+        PredictionSignalEntity latestSignal = predictionSignalService.getLatestBySymbol(symbol);
+        if (latestSignal == null) {
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+        return ResponseEntity.ok(java.util.List.of(latestSignal));
     }
     
     /**
@@ -90,12 +118,28 @@ public class PredictionSignalController {
     }
     
     /**
-     * Get recent signals
+     * Get recent signals with fallback: if no new candle in `minutes`, return latest `limit` signals
      */
     @GetMapping("/recent")
     public ResponseEntity<List<PredictionSignalEntity>> getRecentSignals(
-            @RequestParam(defaultValue = "7") Integer days) {
-        LocalDateTime since = LocalDateTime.now().minusDays(days);
+            @RequestParam(required = false) String symbol,
+            @RequestParam(defaultValue = "7") Integer days,
+            @RequestParam(defaultValue = "10") Integer minutes,
+            @RequestParam(defaultValue = "10") Integer limit) {
+        String effectiveSymbol = (symbol == null || symbol.isBlank()) ? "VN30F1M" : symbol;
+        StockDataEntity latestCandle = stockDataService.getLatestBySymbol(effectiveSymbol);
+        LocalDateTime now = LocalDateTime.now();
+        boolean noRecentCandle = (latestCandle == null) || latestCandle.getTimestamp() == null
+                || latestCandle.getTimestamp().isBefore(now.minusMinutes(minutes));
+        if (noRecentCandle) {
+            // Nếu không có tín hiệu cho symbol hiện tại, trả về N tín hiệu gần nhất toàn bộ
+            List<PredictionSignalEntity> recent = predictionSignalService.getLatestNSignals(effectiveSymbol, limit);
+            if (recent == null || recent.isEmpty()) {
+                recent = predictionSignalService.getLatestNAllSymbols(limit);
+            }
+            return ResponseEntity.ok(recent);
+        }
+        LocalDateTime since = now.minusDays(days);
         List<PredictionSignalEntity> signals = predictionSignalService.getRecentSignals(since);
         return ResponseEntity.ok(signals);
     }

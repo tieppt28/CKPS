@@ -79,6 +79,7 @@ public class RealTimeSignalGenerator {
             } catch (Exception e) {
                 System.err.println("Error generating signal for " + symbol + ": " + e.getMessage());
             }
+
         }
         
         // Nếu không có nến mới nào trong 5 phút, tạm dừng tạo tín hiệu
@@ -419,3 +420,4 @@ public class RealTimeSignalGenerator {
         }
     }
 }
+

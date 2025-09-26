@@ -32,12 +32,33 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy {
   }
 
   loadSignals() {
-    this.backendApi.getRecentSignals().subscribe({
+    // Thử lấy tín hiệu cho VN30F1M trước, nếu không có thì lấy tín hiệu gần đây
+    this.backendApi.getSignalsBySymbol('VN30F1M').subscribe({
       next: (data) => {
         this.signals = data;
+        if (data.length === 0) {
+          // Nếu không có tín hiệu cho VN30F1M, lấy tín hiệu gần đây
+          this.backendApi.getRecentSignals().subscribe({
+            next: (recentData) => {
+              this.signals = recentData;
+            },
+            error: (error) => {
+              console.error('Lỗi khi tải tín hiệu gần đây:', error);
+            }
+          });
+        }
       },
       error: (error) => {
-        console.error('Lỗi khi tải tín hiệu:', error);
+        console.error('Lỗi khi tải tín hiệu cho VN30F1M:', error);
+        // Fallback: lấy tín hiệu gần đây
+        this.backendApi.getRecentSignals().subscribe({
+          next: (recentData) => {
+            this.signals = recentData;
+          },
+          error: (fallbackError) => {
+            console.error('Lỗi khi tải tín hiệu gần đây:', fallbackError);
+          }
+        });
       }
     });
   }
