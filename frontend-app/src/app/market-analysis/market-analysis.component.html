@@ -1,4 +1,14 @@
 <div class="market-analysis-container">
+  <!-- Debug info -->
+  <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc;">
+    <strong>Debug Info:</strong><br>
+    Signals count: {{signals.length}}<br>
+    Loading: {{loadingSignals}}<br>
+    Symbol: {{symbol}}<br>
+    Technical Indicators: {{technicalIndicators ? 'Loaded' : 'Not loaded'}}<br>
+    Forecast: {{forecast ? 'Loaded' : 'Not loaded'}}
+  </div>
+  
   <!-- Alert tín hiệu mới -->
   <div *ngIf="alertMessage" class="signal-alert">
     <i class="fas fa-bell"></i>
@@ -101,27 +111,10 @@
   <div class="signals-section">
     <h3 class="section-title">
       <i class="fas fa-signal"></i>
-      Tín hiệu Giao dịch
+      Tín hiệu Giao dịch ({{signals.length}} tín hiệu)
     </h3>
     
     <div class="signals-table-container">
-      <!-- Bộ lọc mã tín hiệu -->
-      <div style="display:flex; gap:8px; align-items:center; margin:8px 0 12px 0;">
-        <label style="color:#9ca3af; font-size:12px;">Lọc mã:</label>
-        <input 
-          type="text" 
-          name="symbolFilterInput"
-          [(ngModel)]="symbolFilter"
-          placeholder="Nhập mã..." 
-          style="background:#1f2937; border:1px solid #374151; color:#fff; padding:6px 8px; border-radius:4px; width:160px;" />
-        <select 
-          name="symbolFilterSelect"
-          [(ngModel)]="symbolFilter"
-          style="background:#1f2937; border:1px solid #374151; color:#fff; padding:6px 8px; border-radius:4px;">
-          <option value="">Tất cả</option>
-          <option *ngFor="let sym of availableSymbols" [value]="sym">{{sym}}</option>
-        </select>
-      </div>
       <table class="signals-table">
         <thead>
           <tr>
@@ -136,22 +129,27 @@
         </thead>
         <tbody>
           <tr *ngIf="signals.length === 0" class="no-data-row">
-            <td colspan="7" class="no-data">Không có tín hiệu cho {{symbol || 'sàn này'}}</td>
+            <td colspan="7" class="no-data">Không có tín hiệu cho {{symbol || 'sàn này'}} (Debug: signals.length = {{signals.length}})</td>
           </tr>
-          <tr *ngFor="let signal of filteredSignals; let i = index" class="signal-row">
+          <tr *ngFor="let signal of signals; let i = index" class="signal-row">
             <td class="timestamp">{{formatShortTime(signal.createdAt || signal.timestamp)}}</td>
-            <td class="rsi">{{getDisplayedRsi(signal)}}</td>
+            <td class="rsi">
+              <ng-container *ngIf="signal.rsi !== undefined && signal.rsi !== null; else noRsi">
+                {{signal.rsi | number:'1.0-1'}}
+              </ng-container>
+              <ng-template #noRsi>—</ng-template>
+            </td>
             <td class="platform">{{getPlatformName(signal)}}</td>
             <td class="trend">
-              <span class="signal-badge" [style.background-color]="getDisplayedTrendColor(signal)">
-                {{getDisplayedTrendLabel(signal)}}
+              <span class="signal-badge" [style.background-color]="getSignalColor(signal.signalType)">
+                {{getSignalTypeLabel(signal.signalType)}}
               </span>
             </td>
-            <td class="reversal-point">{{getDisplayedReversal(signal)}}</td>
+            <td class="reversal-point">{{getReversalPointDisplay(signal)}}</td>
             <td class="action" [style.color]="getSignalColor(signal.signalType)">
-              {{getDisplayedAction(signal)}}
+              {{getSignalTypeLabel(signal.signalType)}}
             </td>
-            <td class="price">{{getDisplayedPrice(signal)}}</td>
+            <td class="price">{{formatPrice(signal.price)}}</td>
           </tr>
         </tbody>
       </table>

@@ -33,10 +33,6 @@ export interface TrendForecast {
   targetPrice: number;
   summary: string;
   horizonDays: number;
-  // Thêm thông tin dễ hiểu
-  directionText?: string;
-  confidenceLevel?: string;
-  confidenceText?: string;
 }
 
 @Injectable({

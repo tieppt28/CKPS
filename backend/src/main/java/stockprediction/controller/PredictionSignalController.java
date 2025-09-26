@@ -28,7 +28,10 @@ public class PredictionSignalController {
     
     @Autowired
     private StockDataService stockDataService;
-    
+
+    @Autowired
+    private stockprediction.service.RealTimeSignalGenerator realTimeSignalGenerator;
+
     /**
      * Get all prediction signals for a symbol
      */
@@ -60,7 +63,7 @@ public class PredictionSignalController {
         }
         return ResponseEntity.ok(java.util.List.of(latestSignal));
     }
-    
+
     /**
      * Get prediction signals for a symbol within date range
      */
@@ -118,7 +121,7 @@ public class PredictionSignalController {
     }
     
     /**
-     * Get recent signals with fallback: if no new candle in `minutes`, return latest `limit` signals
+     * Get recent signals
      */
     @GetMapping("/recent")
     public ResponseEntity<List<PredictionSignalEntity>> getRecentSignals(
@@ -217,6 +220,26 @@ public class PredictionSignalController {
         return ResponseEntity.ok(tradingViewSignals);
     }
     
+    /**
+     * Generate signal immediately for a symbol
+     */
+    @PostMapping("/{symbol}/generate")
+    public ResponseEntity<Map<String, String>> generateSignal(@PathVariable String symbol) {
+        try {
+            realTimeSignalGenerator.generateSignalForSymbol(symbol);
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "SUCCESS");
+            response.put("message", "Signal generated for " + symbol);
+            response.put("timestamp", LocalDateTime.now().toString());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "ERROR");
+            response.put("message", "Failed to generate signal for " + symbol + ": " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     /**
      * Health check endpoint
      */
