@@ -22,7 +22,6 @@ function saveCharts(req, res) {
             ownerSource: query.client
         }, dataChart, function (err, chart) {
             if (err) {
-                console.log(err);
                 return res.json({status: 'error'})
             }
             return res.json({status: 'ok'});
@@ -37,7 +36,6 @@ function saveCharts(req, res) {
             dataCharts.category = chartCategory.Ticker;
             Charts.findOne({owner: query.user, ownerSource: query.client, name: dataCharts.name, category: chartCategory.Ticker}, function (err, chart) {
                 if (err) {
-                    console.log(err);
                     return res.json({status: 'error'});
                 }
                 if (chart && chart._id) {
@@ -47,7 +45,6 @@ function saveCharts(req, res) {
                         ownerSource: chart.client
                     }, dataCharts, function (err, charts) {
                         if (err) {
-                            console.log(err);
                             return res.json({status: 'error', id: chart._id})
                         }
                         return res.json({status: 'ok', id: chart._id});
@@ -55,7 +52,6 @@ function saveCharts(req, res) {
                 } else {
                     dataCharts.save(function (err) {
                         if (err) {
-                            console.log(err);
                             return res.json({status: 'error', id: dataCharts._id})
                         }
                         return res.json({status: 'ok', id: dataCharts._id});
@@ -67,7 +63,6 @@ function saveCharts(req, res) {
             dataCharts.category = chartCategory.Default;
             dataCharts.save(function (err) {
                 if (err) {
-                    console.log(err);
                     return res.json({status: 'error', id: dataCharts._id})
                 }
                 return res.json({status: 'ok', id: dataCharts._id});
@@ -172,7 +167,6 @@ function loadChartTicker(req, res) {
                 })
                 isVip = res && res.data && res.data.isVip;
             } catch(e) {
-                console.log(e);
             }
 
             if (!data.success) {

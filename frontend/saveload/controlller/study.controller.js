@@ -19,7 +19,6 @@ function saveStudyTemplate(req, res) {
                 ownerSource: query.client
             }, {content: data.content}, function (err, chart) {
                 if (err) {
-                    console.log(err);
                     return res.json({status: 'error'})
                 }
                 return res.json({status: 'ok'});
@@ -34,7 +33,6 @@ function saveStudyTemplate(req, res) {
             dataTemplate = new StudyTemplate(dataTemplate);
             dataTemplate.save(function (err) {
                 if (err) {
-                    console.log(err);
                     return res.json({status: 'error'})
                 }
                 return res.json({status: 'ok'});

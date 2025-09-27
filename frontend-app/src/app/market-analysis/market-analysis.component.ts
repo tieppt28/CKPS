@@ -19,12 +19,9 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
   lastSignalId: number | null = null;
   lastSignalTimestamp: string | null = null;
 
-  constructor(private backendApi: BackendApiService) {
-    console.log('MarketAnalysisComponent constructor called');
-  }
+  constructor(private backendApi: BackendApiService) {}
 
   ngOnInit() {
-    console.log('MarketAnalysisComponent ngOnInit called');
     this.loadSignals();
     this.loadTechnicalIndicators();
     this.loadForecast();
@@ -47,7 +44,6 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     // Khi symbol thay đổi, chỉ reload tín hiệu và dự báo
     if (changes['symbol']) {
-      console.log('Symbol changed to:', this.symbol);
       // Clear dữ liệu cũ trước khi load mới
       this.signals = [];
       this.forecast = null;
@@ -62,17 +58,11 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
 
   loadSignals() {
     this.loadingSignals = true;
-    console.log('Loading signals for symbol:', this.symbol);
-    console.log('API URL:', this.backendApi);
     
-    // Luôn gọi getRecentSignals() để lấy tất cả tín hiệu
-    this.backendApi.getRecentSignals().subscribe({
+    // Chỉ lấy tín hiệu cho VN30F1M
+    this.backendApi.getSignalsBySymbol('VN30F1M').subscribe({
       next: (data) => {
-        console.log('Signals loaded successfully:', data);
-        console.log('Signals count:', data?.length);
-        // Luôn cập nhật dữ liệu, kể cả khi rỗng
         this.signals = Array.isArray(data) ? data : [];
-        console.log('Updated signals array:', this.signals);
         const latest = this.getNewestSignal(data);
         if (latest) {
           this.lastSignalId = latest.id ?? this.lastSignalId;
@@ -81,9 +71,6 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
         this.loadingSignals = false;
       },
       error: (error) => {
-        console.error('Lỗi khi tải tín hiệu:', error);
-        console.error('Error details:', error);
-        // Nếu có lỗi, vẫn hiển thị mảng rỗng thay vì fallback
         this.signals = [];
         this.loadingSignals = false;
       }
@@ -111,9 +98,7 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
       next: (data) => {
         this.technicalIndicators = data;
       },
-      error: (error) => {
-        console.error('Lỗi khi tải chỉ số kỹ thuật:', error);
-      }
+      error: (error) => {}
     });
   }
 

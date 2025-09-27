@@ -199,7 +199,6 @@ RequestProcessor.prototype._sendMarks = function (symbol, from, to, resolution, 
         response.writeHead(200, defaultResponseHeader);
         response.end(JSON.stringify(result));
     }).catch(reason => {
-        console.error("getMarks", symbol, from, to, resolution, reason);
         sendError('data', response);
     });
 };
@@ -311,7 +310,6 @@ RequestProcessor.prototype._sendSymbolHistory = function (symbol, startDateTimes
     getHistory(symbol, resolution, startDateTimestamp, endDateTimestamp, lastTimeTimestamp).then(result => {
         sendResult(JSON.stringify(result));
     }).catch(reason => {
-        console.error('getSymbolHistory', symbol, resolution, startDateTimestamp, endDateTimestamp, reason);
         sendError('data', response);
     });
 };
@@ -381,7 +379,6 @@ RequestProcessor.prototype._sendQuotes = function (tickersString, response) {
     });
 
     sendJsonResponse(response, this._quotesQuandlWorkaround(tickersMap));
-    console.log('Quotes request : ' + tickersString + ' processed from quandl cache');
 };
 
 RequestProcessor.prototype._sendNews = function (symbol, response) {
@@ -444,7 +441,6 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
         }
     } catch (error) {
         sendError(error, response);
-        console.error('Exception: ' + error);
     }
 };
 

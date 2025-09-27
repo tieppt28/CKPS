@@ -5,9 +5,7 @@ const client = Redis.createClient({url: config.redis.trading});
 client.on('error', () => {
 });
 client.connect().then(() => {
-    console.log('Redis trading connected for indicators');
 }).catch((err) => {
-    console.error('Redis trading connect error', err);
 });
 
 // Tính RSI theo công thức chuẩn
@@ -51,13 +49,11 @@ module.exports = async function (symbol, indicator, timestamp) {
         const data = await client.get(dataKey);
         
         if (!data) {
-            console.log(`No data found for ${symbol}`);
             return null;
         }
         
         const parsedData = JSON.parse(data);
         if (!parsedData.c || parsedData.c.length === 0) {
-            console.log(`No close prices for ${symbol}`);
             return null;
         }
         
@@ -68,8 +64,6 @@ module.exports = async function (symbol, indicator, timestamp) {
         let closestIndex = -1;
         let minDiff = Infinity;
         
-        console.log(`Looking for timestamp ${timestamp} in ${times.length} time entries`);
-        console.log(`Time range: ${times[0]} to ${times[times.length - 1]}`);
         
         for (let i = 0; i < times.length; i++) {
             const diff = Math.abs(times[i] - timestamp);
@@ -79,10 +73,8 @@ module.exports = async function (symbol, indicator, timestamp) {
             }
         }
         
-        console.log(`Closest index: ${closestIndex}, minDiff: ${minDiff}`);
         
         if (closestIndex === -1 || closestIndex < 14) {
-            console.log(`Not enough data for RSI calculation for ${symbol}. closestIndex: ${closestIndex}, need at least 14`);
             return null;
         }
         
@@ -90,7 +82,6 @@ module.exports = async function (symbol, indicator, timestamp) {
         const pricesForRsi = closes.slice(0, closestIndex + 1);
         const rsi = calculateRSI(pricesForRsi, 14);
         
-        console.log(`RSI for ${symbol} at ${new Date(timestamp * 1000).toISOString()}: ${rsi}`);
         
         return {
             rsi: rsi,
@@ -99,7 +90,6 @@ module.exports = async function (symbol, indicator, timestamp) {
         };
         
     } catch (error) {
-        console.error(`Error calculating ${indicator} for ${symbol}:`, error);
         return null;
     }
 };

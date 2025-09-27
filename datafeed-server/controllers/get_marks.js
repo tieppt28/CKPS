@@ -5,18 +5,14 @@ const redis = Redis.createClient({url: config.redis.main});
 redis.on('error', () => {
 });
 redis.connect().then(() => {
-    console.log('Redis base connected');
 }).catch((err) => {
-    console.error('Redis base connect error', err);
 });
 
 const csRedis = Redis.createClient({url: config.redis.cs});
 csRedis.on('error', () => {
 });
 csRedis.connect().then(() => {
-    console.log('Redis CS connected');
 }).catch((err) => {
-    console.error('Redis CS connect error', err);
 });
 
 module.exports = async function (symbol, from, to, resolution) {

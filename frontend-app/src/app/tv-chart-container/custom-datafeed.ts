@@ -116,7 +116,6 @@ export class CustomDatafeed extends UDFCompatibleDatafeed {
                     }
                 }
             } catch (e) {
-                console.log(e);
             }
             return resolve(rawMarks);
         })

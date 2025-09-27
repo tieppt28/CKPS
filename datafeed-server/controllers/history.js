@@ -5,9 +5,7 @@ const client = Redis.createClient({url: config.redis.trading});
 client.on('error', () => {
 });
 client.connect().then(() => {
-    console.log('Redis trading connected');
 }).catch((err) => {
-    console.error('Redis trading connect error', err);
 });
 
 module.exports = async function (symbol, resolution, startTime, endTime, lastTime) {
@@ -36,13 +34,11 @@ module.exports = async function (symbol, resolution, startTime, endTime, lastTim
     let data = await client.HMGET(dataKey, dataTimes);
     const isAllNull = Array.isArray(data) && data.length > 0 && data.every((v) => v === null);
     if (!data || !data.length || isAllNull) {
-        try { console.log('[history] redis miss -> fallback VNDIRECT', { symbol, resolution, from: startTime, to: endTime }); } catch (e) {}
         // Fallback trực tiếp: gọi VNDIRECT khi Redis không có dữ liệu
         try {
             const request = require('request');
             const vndRes = (resolution === 'd' || resolution === '1d') ? 'D' : resolution;
             const vndUrl = `https://dchart-api.vndirect.com.vn/dchart/history?symbol=${encodeURIComponent(symbol)}&resolution=${encodeURIComponent(vndRes)}&from=${startTime}&to=${endTime}`;
-            console.log('[history] VNDIRECT URL:', vndUrl);
             const vd = await new Promise((resolve, reject) => {
                 request({
                     url: vndUrl,
@@ -62,7 +58,6 @@ module.exports = async function (symbol, resolution, startTime, endTime, lastTim
                     }
                 });
             });
-            console.log('[history] VNDIRECT resp keys:', vd && Object.keys(vd));
             if (vd && Array.isArray(vd.t)) {
                 return {
                     t: vd.t || [],
@@ -75,7 +70,6 @@ module.exports = async function (symbol, resolution, startTime, endTime, lastTim
                 };
             }
         } catch (e) {
-            console.error('history vndirect fallback error', e);
         }
         return symbolData;
     }

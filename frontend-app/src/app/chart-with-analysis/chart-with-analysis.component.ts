@@ -17,7 +17,6 @@ export class ChartWithAnalysisComponent implements OnInit {
 
   receiveMessage(event: any) {
     // Handle messages from chart component
-    console.log('Message received from chart:', event);
     if (typeof event === 'string' && event.length > 0) {
       this.activeSymbol = event;
     }

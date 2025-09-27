@@ -102,7 +102,6 @@ export class TvChartContainerComponent implements OnInit, OnDestroy {
 
 
   constructor(private router: Router, public chartService: ChartFinboxService, private cd: ChangeDetectorRef) {
-    console.log('version: 2.0');
     // Initialize screenWidth on component load
     this.screenWidth = window.innerWidth;
   }
@@ -346,7 +345,6 @@ export class TvChartContainerComponent implements OnInit, OnDestroy {
           }
         })
       } catch (e) {
-        console.log(e);
       }
 
       if (this._miniChart) {
@@ -485,7 +483,6 @@ export class TvChartContainerComponent implements OnInit, OnDestroy {
       const studies = this._tvWidget?.activeChart().getAllStudies() ?? [];
       // studies.forEach(item => console.log('study: ', item));
       const volumeStudyExists = studies.some(study => study.name === "Volume");
-      console.log('volumeStudyExists: ', volumeStudyExists);
       const chart = this._tvWidget?.activeChart();
       if (!volumeStudyExists) {
           this._tvWidget?.activeChart().createStudy("Volume", false, false, {}, {}).then((_) => {
@@ -588,7 +585,6 @@ export class TvChartContainerComponent implements OnInit, OnDestroy {
         var data = { 'type': 'vip_requirement' };
         window.parent.postMessage(JSON.stringify(data), '*');
       } catch (e) {
-        console.log(e);
       }
     }
   }

@@ -1,7 +1,6 @@
 const redisCreate = require('../scripts/utilities/redis-create');
 const client = redisCreate.redisCreateClient();
 client.on('error', function(err){
-    console.error('Redis error:', err);
 });
 const KEY_CHART_USER = "charts:user:";
 
@@ -18,7 +17,6 @@ exports.saveChartTickerUser = function (ticker, userid, chartObject, version, ca
     }
     client.hset(redisKey, ticker, JSON.stringify(chartObject), function (err, data) {
         if (err) {
-            console.log(err + ' - ' + data);
             return callback(false);
         }
         return callback(true);
@@ -33,7 +31,6 @@ exports.removeChartTickerUser = function (chartId, userid, version, callback) {
     }
     client.hdel(redisKey, chartId, function (err, data) {
         if (err) {
-            console.log(err + ' - ' + data);
             return callback(false);
         }
         return callback(true);
@@ -66,7 +63,6 @@ exports.resetDefaultChartTickerUser = function (ticker, userid, version, callbac
     }
     client.hdel(redisKey, ticker, function (err, data) {
         if (err || !data || data === null) {
-            console.log(err + ' - ' + data);
             return callback({success: false});
         }
         return callback({success: true});

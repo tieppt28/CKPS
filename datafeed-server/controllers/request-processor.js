@@ -199,7 +199,6 @@ RequestProcessor.prototype._sendMarks = function (symbol, from, to, resolution, 
         response.writeHead(200, defaultResponseHeader);
         response.end(JSON.stringify(result));
     }).catch(reason => {
-        console.error("getMarks", symbol, from, to, resolution, reason);
         sendError('data', response);
     });
 };
@@ -311,7 +310,6 @@ RequestProcessor.prototype._sendSymbolHistory = function (symbol, startDateTimes
     getHistory(symbol, resolution, startDateTimestamp, endDateTimestamp, lastTimeTimestamp).then(result => {
         sendResult(JSON.stringify(result));
     }).catch(reason => {
-        console.error('getSymbolHistory', symbol, resolution, startDateTimestamp, endDateTimestamp, reason);
         sendError('data', response);
     });
 };
@@ -381,7 +379,6 @@ RequestProcessor.prototype._sendQuotes = function (tickersString, response) {
     });
 
     sendJsonResponse(response, this._quotesQuandlWorkaround(tickersMap));
-    console.log('Quotes request : ' + tickersString + ' processed from quandl cache');
 };
 
 RequestProcessor.prototype._sendNews = function (symbol, response) {
@@ -420,7 +417,6 @@ RequestProcessor.prototype._sendIndicator = function (symbol, indicator, timesta
         response.writeHead(200, defaultResponseHeader);
         response.end(JSON.stringify(result));
     }).catch(reason => {
-        console.error('getIndicator', symbol, indicator, timestamp, reason);
         sendError('indicator', response);
     });
 };
@@ -435,7 +431,6 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
             this._sendSymbolSearchResults(query['query'], query['type'], query['exchange'], query['limit'], response);
         } else if (action === '/history') {
             const res = (query['resolution'] || '').toString().toLowerCase();
-            try { console.log('[request] /history', { symbol: query['symbol'], from: query['from'], to: query['to'], res }); } catch (e) {}
             this._sendSymbolHistory(query['symbol'], query['from'], query['to'], query['lastTime'], res, response);
         } else if (action === '/quotes') {
             this._sendQuotes(query['symbols'], response);
@@ -460,7 +455,6 @@ RequestProcessor.prototype.processRequest = function (action, query, response) {
         }
     } catch (error) {
         sendError(error, response);
-        console.error('Exception: ' + error);
     }
 };
 

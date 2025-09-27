@@ -42,22 +42,17 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy {
             next: (recentData) => {
               this.signals = recentData;
             },
-            error: (error) => {
-              console.error('Lỗi khi tải tín hiệu gần đây:', error);
-            }
+            error: (error) => {}
           });
         }
       },
       error: (error) => {
-        console.error('Lỗi khi tải tín hiệu cho VN30F1M:', error);
         // Fallback: lấy tín hiệu gần đây
         this.backendApi.getRecentSignals().subscribe({
           next: (recentData) => {
             this.signals = recentData;
           },
-          error: (fallbackError) => {
-            console.error('Lỗi khi tải tín hiệu gần đây:', fallbackError);
-          }
+          error: (fallbackError) => {}
         });
       }
     });
@@ -68,9 +63,7 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.technicalIndicators = data;
       },
-      error: (error) => {
-        console.error('Lỗi khi tải chỉ số kỹ thuật:', error);
-      }
+      error: (error) => {}
     });
   }
 

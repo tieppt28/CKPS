@@ -19,6 +19,5 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // this.createChart();
-    console.log('app-root ngOnInit version 1.0');
   }
 }

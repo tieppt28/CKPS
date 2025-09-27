@@ -5,9 +5,7 @@ const client = Redis.createClient({url: config.redis.trading});
 client.on('error', () => {
 });
 client.connect().then(() => {
-    console.log('Redis trading connected');
 }).catch((err) => {
-    console.error('Redis trading connect error', err);
 });
 
 module.exports = async function (symbol, resolution, startTime, endTime, lastTime) {

@@ -1,8 +1,9 @@
+const REDIS = process.env.REDIS_URL || 'redis://localhost:6379';
 const configDebug = {
     redis: {
-        main: 'redis://localhost:6379',
-        trading: 'redis://localhost:6379',
-        cs: 'redis://localhost:6379',
+        main: REDIS,
+        trading: REDIS,
+        cs: REDIS,
     },
     provider: {
         vs: 'https://api2.vietstock.vn/Finbox/history?'
