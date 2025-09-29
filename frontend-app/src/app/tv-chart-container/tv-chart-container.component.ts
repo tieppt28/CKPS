@@ -117,6 +117,7 @@ export class TvChartContainerComponent implements OnInit, OnDestroy {
     this._miniChart = miniChart || this._miniChart;
   }
 
+  @Input()
   set onlyChart(onlyChart: any) {
     this._onlyChart = onlyChart;
   }

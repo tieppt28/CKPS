@@ -8,6 +8,11 @@ import stockprediction.indicators.TechnicalIndicators;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TrendForecastService {
@@ -20,7 +25,8 @@ public class TrendForecastService {
         result.put("symbol", symbol);
         result.put("horizonDays", horizonDays);
 
-        List<StockDataEntity> entities = stockDataService.getBySymbol(symbol);
+        // Lấy dữ liệu thực tế từ VNDIRECT API
+        List<StockDataEntity> entities = getRealStockData(symbol);
         if (entities == null || entities.size() < 50) {
             result.put("confidence", 0.0);
             result.put("direction", "NEUTRAL");
@@ -44,26 +50,93 @@ public class TrendForecastService {
         double macdSignal = macdRes.getSignalLine().get(last);
         double macdHist = macdRes.getHistogram().get(last);
 
-        // Heuristic ensemble: EMA cross, MACD, Histogram, Price vs EMA20, RSI bands, ATR-based momentum
+        // Tính toán dự báo dựa trên phân tích kỹ thuật chuẩn
         double score = 0.0;
-        if (lastEma20 > lastEma50) score += 0.4; else score -= 0.4;
-        if (macd > macdSignal) score += 0.3; else score -= 0.3;
-        if (macdHist > 0) score += 0.2; else score -= 0.2;
-        if (lastClose > lastEma20) score += 0.1; else score -= 0.1;
         double rsi = rsiList.get(last);
-        if (rsi < 30) score += 0.15; else if (rsi > 70) score -= 0.15;
+        
+        // 1. EMA Cross (40% trọng số)
+        if (lastEma20 > lastEma50) {
+            score += 0.4; // Bullish cross
+        } else {
+            score -= 0.4; // Bearish cross
+        }
+        
+        // 2. MACD Signal (30% trọng số)
+        if (macd > macdSignal) {
+            score += 0.3; // Bullish MACD
+        } else {
+            score -= 0.3; // Bearish MACD
+        }
+        
+        // 3. MACD Histogram (20% trọng số)
+        if (macdHist > 0) {
+            score += 0.2; // Positive momentum
+        } else {
+            score -= 0.2; // Negative momentum
+        }
+        
+        // 4. Price vs EMA20 (10% trọng số)
+        if (lastClose > lastEma20) {
+            score += 0.1; // Price above EMA20
+        } else {
+            score -= 0.1; // Price below EMA20
+        }
+        
+        // 5. RSI Analysis (15% trọng số)
+        if (rsi < 30) {
+            score += 0.15; // Oversold - potential bounce
+        } else if (rsi > 70) {
+            score -= 0.15; // Overbought - potential pullback
+        } else if (rsi > 50) {
+            score += 0.05; // Slight bullish bias
+        } else {
+            score -= 0.05; // Slight bearish bias
+        }
 
         // ATR bước tiếp (xấp xỉ): dùng biến động gần đây để mở rộng target
         double atr = calculateSimpleATR(data, 14);
 
-        String direction = score > 0.15 ? "UP" : (score < -0.15 ? "DOWN" : "NEUTRAL");
-        double confidence = Math.min(1.0, Math.abs(score)) * 100.0;
+        // Xác định hướng và độ tin cậy (độ tin cậy giảm khi horizon dài)
+        String direction;
+        double baseConfidence;
+        
+        if (score > 0.3) {
+            direction = "UP";
+            baseConfidence = Math.min(95.0, 50.0 + (score * 50.0));
+        } else if (score < -0.3) {
+            direction = "DOWN";
+            baseConfidence = Math.min(95.0, 50.0 + (Math.abs(score) * 50.0));
+        } else {
+            direction = "NEUTRAL";
+            baseConfidence = Math.max(15.0, 50.0 - (Math.abs(score) * 50.0));
+        }
+        
+        // Điều chỉnh độ tin cậy dựa trên số ngày dự báo
+        // Ngắn hạn: tin cậy cao, dài hạn: tin cậy thấp hơn
+        double horizonFactor = Math.max(0.3, Math.min(1.0, 1.0 - (horizonDays - 1) * 0.1));
+        double confidence = baseConfidence * horizonFactor;
 
-        // Ước lượng vùng giá mục tiêu thô dựa trên EMA20
-        double volFactor = Math.max(0.003, Math.min(0.02, atr / Math.max(1e-6, lastClose)));
-        double target = direction.equals("UP") ? lastEma20 * (1 + volFactor * horizonDays)
-                                               : direction.equals("DOWN") ? lastEma20 * (1 - volFactor * horizonDays)
-                                               : lastClose;
+        // Tính giá mục tiêu dựa trên ATR, xu hướng và thời gian dự báo
+        double atrPercent = atr / Math.max(1e-6, lastClose);
+        
+        // Điều chỉnh hệ số volatility theo thời gian dự báo
+        // Ngắn hạn: thay đổi nhỏ nhưng chính xác hơn
+        // Dài hạn: thay đổi lớn hơn nhưng không chắc chắn
+        double timeBasedFactor = 1.0 + (horizonDays - 1) * 0.3; // Tăng dần theo ngày
+        double volFactor = Math.max(0.005, Math.min(0.05, atrPercent * timeBasedFactor));
+        
+        double target;
+        if (direction.equals("UP")) {
+            // Tăng theo thời gian và volatility
+            target = lastClose * (1 + volFactor * Math.sqrt(horizonDays));
+        } else if (direction.equals("DOWN")) {
+            // Giảm theo thời gian và volatility  
+            target = lastClose * (1 - volFactor * Math.sqrt(horizonDays));
+        } else {
+            // Neutral: dao động nhỏ quanh giá hiện tại
+            double neutralMove = volFactor * horizonDays * 0.3;
+            target = lastClose * (1 + neutralMove * (Math.random() > 0.5 ? 1 : -1));
+        }
 
         result.put("direction", direction);
         result.put("confidence", round2(confidence));
@@ -79,6 +152,13 @@ public class TrendForecastService {
                 "atr", round4(atr)
         ));
         result.put("summary", buildSummary(direction, result));
+        result.put("debug", Map.of(
+                "horizonDays", horizonDays,
+                "baseConfidence", round2(baseConfidence),
+                "horizonFactor", round2(horizonFactor),
+                "timeBasedFactor", round2(timeBasedFactor),
+                "score", round4(score)
+        ));
         logForecast(result);
         return result;
     }
@@ -107,9 +187,78 @@ public class TrendForecastService {
     }
 
     private static void logForecast(Map<String, Object> r) {
-        // Có thể thay bằng logger, tạm dùng System.out cho nhanh
-        System.out.println("[Forecast] " + r.get("symbol") + " -> " + r.get("summary") +
-                ", target=" + r.get("targetPrice") + ", indicators=" + r.get("indicators"));
+        // Enhanced logging with horizon information
+        System.out.println("[Forecast] " + r.get("symbol") + " (" + r.get("horizonDays") + " days) -> " + 
+                r.get("direction") + " confidence=" + r.get("confidence") + "% target=" + r.get("targetPrice"));
+        
+        // Debug info
+        @SuppressWarnings("unchecked")
+        Map<String, Object> debug = (Map<String, Object>) r.get("debug");
+        if (debug != null) {
+            System.out.println("[Debug] horizonFactor=" + debug.get("horizonFactor") + 
+                    ", timeBasedFactor=" + debug.get("timeBasedFactor") + ", score=" + debug.get("score"));
+        }
+    }
+    
+    /**
+     * Lấy dữ liệu thực tế từ VNDIRECT API
+     */
+    private List<StockDataEntity> getRealStockData(String symbol) {
+        try {
+            // Gọi VNDIRECT API để lấy dữ liệu thực tế
+            long currentTime = System.currentTimeMillis() / 1000;
+            long fromTime = currentTime - (30 * 24 * 3600); // 30 ngày trước
+            
+            String url = "https://dchart-api.vndirect.com.vn/dchart/history?symbol=" + symbol + 
+                        "&resolution=1d&from=" + fromTime + "&to=" + currentTime;
+            
+            RestTemplate restTemplate = new RestTemplate();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            
+            if (response != null && "ok".equals(response.get("s"))) {
+                @SuppressWarnings("unchecked")
+                List<Double> times = (List<Double>) response.get("t");
+                @SuppressWarnings("unchecked")
+                List<Double> opens = (List<Double>) response.get("o");
+                @SuppressWarnings("unchecked")
+                List<Double> highs = (List<Double>) response.get("h");
+                @SuppressWarnings("unchecked")
+                List<Double> lows = (List<Double>) response.get("l");
+                @SuppressWarnings("unchecked")
+                List<Double> closes = (List<Double>) response.get("c");
+                @SuppressWarnings("unchecked")
+                List<Double> volumes = (List<Double>) response.get("v");
+                
+                if (closes != null && !closes.isEmpty()) {
+                    List<StockDataEntity> entities = new ArrayList<>();
+                    for (int i = 0; i < closes.size(); i++) {
+                        LocalDateTime timestamp = LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(times.get(i).longValue()), 
+                            ZoneId.systemDefault()
+                        );
+                        
+                        entities.add(new StockDataEntity(
+                            symbol,
+                            timestamp,
+                            opens.get(i),
+                            highs.get(i),
+                            lows.get(i),
+                            closes.get(i),
+                            volumes.get(i).longValue()
+                        ));
+                    }
+                    
+                    System.out.println("Got real forecast data for " + symbol + ": " + entities.size() + " candles");
+                    return entities;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting real forecast data for " + symbol + ": " + e.getMessage());
+        }
+        
+        // Fallback: lấy từ database
+        return stockDataService.getBySymbol(symbol);
     }
 }
 

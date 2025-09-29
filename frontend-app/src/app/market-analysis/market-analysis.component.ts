@@ -71,6 +71,7 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
         this.loadingSignals = false;
       },
       error: (error) => {
+        console.error('Error loading VN30F1M signals:', error);
         this.signals = [];
         this.loadingSignals = false;
       }
@@ -96,19 +97,35 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
   loadTechnicalIndicators() {
     this.backendApi.getTechnicalIndicators().subscribe({
       next: (data) => {
-        this.technicalIndicators = data;
+        // Map backend field names to frontend expected names
+        this.technicalIndicators = {
+          ...data,
+          macd: (data as any)['macd/wt'] || data.macd || 0,
+          rsi: data.rsi || 50,
+          ema20: data.ema20 || 0,
+          ema50: data.ema50 || 0,
+          macdSignal: data.macdSignal || 0,
+          macdHistogram: data.macdHistogram || 0,
+          atr: data.atr || 0
+        };
+        console.log('Technical indicators loaded:', this.technicalIndicators);
       },
-      error: (error) => {}
+      error: (error) => {
+        console.error('Error loading technical indicators:', error);
+      }
     });
   }
 
   loadForecast() {
-    const symbol = this.symbol || 'FPT';
+    const symbol = 'VN30F1M'; // Always use VN30F1M for forecast
     this.backendApi.forecastShortTerm(symbol, this.forecastHorizon).subscribe({
       next: (data) => {
         this.forecast = data;
+        console.log('Forecast loaded:', this.forecast);
       },
-      error: (_: any) => {}
+      error: (error) => {
+        console.error('Error loading forecast:', error);
+      }
     });
   }
 
@@ -125,10 +142,8 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private checkNewSignal() {
-    const loader = this.symbol
-      ? this.backendApi.getSignalsBySymbol(this.symbol)
-      : this.backendApi.getRecentSignals();
-    loader.subscribe({
+    // Chỉ kiểm tra tín hiệu cho VN30F1M
+    this.backendApi.getSignalsBySymbol('VN30F1M').subscribe({
       next: (list: PredictionSignal[]) => {
         const latest = this.getNewestSignal(list);
         if (!latest) return;
@@ -209,17 +224,32 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy, OnChanges {
 
   getReversalPointDisplay(signal: PredictionSignal): string {
     if (signal.reversalPoint) {
-      const price = signal.price || 0;
-      const reversal = signal.reversalPoint;
       const type = signal.signalType;
 
-      if (type === 'LONG' || (type === 'REVERSAL' && reversal <= price)) {
-        return `Đảo long ${this.formatPrice(reversal)}`;
+      // Logic điểm đảo chiều theo yêu cầu:
+      // Nếu đang TĂNG (LONG) → Đảo short (khi nào sẽ chuyển sang giảm)
+      // Nếu đang SHORT (GIẢM) → Đảo long (khi nào sẽ chuyển sang tăng)
+      // Nếu trung lập → tính toán thêm
+      
+      if (type === 'LONG') {
+        return `Đảo short ${this.formatPrice(signal.reversalPoint)}`;
+      } else if (type === 'SHORT') {
+        return `Đảo long ${this.formatPrice(signal.reversalPoint)}`;
+      } else if (type === 'REVERSAL') {
+        // Trung lập - cần tính toán thêm dựa trên giá hiện tại và reversal
+        const price = signal.price || 0;
+        const reversal = signal.reversalPoint;
+        
+        // Nếu reversal cao hơn giá → Đảo short (resistance)
+        // Nếu reversal thấp hơn giá → Đảo long (support)
+        if (reversal > price) {
+          return `Đảo short ${this.formatPrice(reversal)}`;
+        } else {
+          return `Đảo long ${this.formatPrice(reversal)}`;
+        }
       }
-      if (type === 'SHORT' || (type === 'REVERSAL' && reversal > price)) {
-        return `Đảo short ${this.formatPrice(reversal)}`;
-      }
-      return this.formatPrice(reversal);
+      
+      return this.formatPrice(signal.reversalPoint);
     }
     return '—';
   }

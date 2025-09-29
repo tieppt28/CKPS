@@ -45,19 +45,18 @@ export class BackendApiService {
 
   // Lấy danh sách tín hiệu gần đây
   getRecentSignals(): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/signals/recent`);
+    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/recent`);
   }
 
   // Lấy tín hiệu theo symbol
   getSignalsBySymbol(symbol: string): Observable<PredictionSignal[]> {
-    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/signals/${symbol}`);
+    return this.http.get<PredictionSignal[]>(`${this.apiUrl}/api/signals/${symbol}`);
   }
 
-  // Lấy chỉ số kỹ thuật
+  // Lấy chỉ số kỹ thuật cho VN30F1M
   getTechnicalIndicators(symbol?: string): Observable<TechnicalIndicators> {
-    const url = symbol 
-      ? `${this.apiUrl}/technical-indicators/${symbol}`
-      : `${this.apiUrl}/technical-indicators`;
+    const symbolToUse = symbol || 'VN30F1M';
+    const url = `${this.apiUrl}/api/signals/technical-indicators/${symbolToUse}`;
     return this.http.get<TechnicalIndicators>(url);
   }
 

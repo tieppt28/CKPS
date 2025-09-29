@@ -116,13 +116,12 @@
             <th>Nền tảng</th>
             <th>Xu hướng</th>
             <th>Điểm đảo chiều</th>
-            <th>Lệnh</th>
             <th>Giá</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngIf="signals.length === 0" class="no-data-row">
-            <td colspan="7" class="no-data">Không có tín hiệu cho {{symbol || 'sàn này'}}</td>
+            <td colspan="6" class="no-data">Không có tín hiệu cho {{symbol || 'sàn này'}}</td>
           </tr>
           <tr *ngFor="let signal of signals; let i = index" class="signal-row">
             <td class="timestamp">{{formatShortTime(signal.createdAt || signal.timestamp)}}</td>
@@ -139,9 +138,6 @@
               </span>
             </td>
             <td class="reversal-point">{{getReversalPointDisplay(signal)}}</td>
-            <td class="action" [style.color]="getSignalColor(signal.signalType)">
-              {{getSignalTypeLabel(signal.signalType)}}
-            </td>
             <td class="price">{{formatPrice(signal.price)}}</td>
           </tr>
         </tbody>

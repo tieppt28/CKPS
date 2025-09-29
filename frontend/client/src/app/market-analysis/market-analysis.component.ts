@@ -42,17 +42,22 @@ export class MarketAnalysisComponent implements OnInit, OnDestroy {
             next: (recentData) => {
               this.signals = recentData;
             },
-            error: (error) => {}
+            error: (error) => {
+              console.error('Error loading recent signals:', error);
+            }
           });
         }
       },
       error: (error) => {
+        console.error('Error loading VN30F1M signals:', error);
         // Fallback: lấy tín hiệu gần đây
         this.backendApi.getRecentSignals().subscribe({
           next: (recentData) => {
             this.signals = recentData;
           },
-          error: (fallbackError) => {}
+          error: (fallbackError) => {
+            console.error('Error loading fallback signals:', fallbackError);
+          }
         });
       }
     });
